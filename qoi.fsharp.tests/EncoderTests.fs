@@ -46,7 +46,7 @@ let ``Should have correct header`` () =
 
     let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
 
-    let actual = new ArraySegment<byte>(bytes, 0, 14)
+    let actual = ArraySegment<byte>(bytes, 0, 14)
     Assert.Equal(expected, actual)
 
 [<Fact>]
@@ -69,5 +69,40 @@ let ``Should have correct end marker`` () =
 
     let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
 
-    let actual = new ArraySegment<byte>(bytes, bytes.Length - 8, 8)
+    let actual = ArraySegment<byte>(bytes, bytes.Length - 8, 8)
+    Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have RGBA chunk`` () =
+    let expected = [ 0b11111111uy; 0uy; 0uy; 0uy; 128uy ]
+
+    let input =
+        [ 0uy
+          0uy
+          0uy
+          128uy
+
+          0uy
+          0uy
+          0uy
+          128uy
+
+          0uy
+          0uy
+          0uy
+          128uy
+
+          0uy
+          0uy
+          0uy
+          128uy ]
+
+    let width = 2
+    let height = 2
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+
+    let actual = ArraySegment<byte>(bytes, 14, 5)
     Assert.Equal(expected, actual)

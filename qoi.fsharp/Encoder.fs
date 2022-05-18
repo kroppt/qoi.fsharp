@@ -63,6 +63,16 @@ module Encoder =
             this.binWriter.Write(byte this.channels)
             this.binWriter.Write(byte this.colorSpace)
 
+        member private this.WriteChunks() =
+            let pixels = this.input |> List.chunkBySize 4
+
+            pixels
+            |> List.iter (fun pixel ->
+                this.binWriter.Write(0b11111111uy)
+
+                pixel
+                |> List.iter (fun color -> this.binWriter.Write(color)))
+
         member private this.WriteFooter() =
             this.binWriter.Write(byte 0)
             this.binWriter.Write(byte 0)
@@ -75,4 +85,5 @@ module Encoder =
 
         member private this.Encode() =
             this.WriteHeader()
+            this.WriteChunks()
             this.WriteFooter()

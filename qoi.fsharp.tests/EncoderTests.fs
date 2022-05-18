@@ -252,6 +252,7 @@ let ``Should have luma chunk`` () =
     let actual = ArraySegment<byte>(bytes, 18, 2)
     Assert.Equal(expected, actual)
 
+[<Fact>]
 let ``Should have luma chunk wraparound`` () =
     let expected = [ 0b10_100010uy; 0b0110_0101uy ]
 

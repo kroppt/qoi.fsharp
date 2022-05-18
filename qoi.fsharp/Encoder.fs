@@ -29,6 +29,27 @@ module Encoder =
                 this.R <= 3uy && this.G <= 3uy && this.B <= 3uy
         end
 
+    type LumaDiff =
+        struct
+            val G: byte
+            val RG: byte
+            val BG: byte
+
+            new(prev: Pixel, next: Pixel) =
+                let dr = next.R - prev.R
+                let dg = next.G - prev.G
+                let db = next.B - prev.B
+
+                { G = dg + 32uy
+                  RG = dr - dg + 8uy
+                  BG = db - dg + 8uy }
+
+            member this.IsSmall() =
+                this.G <= 63uy
+                && this.RG <= 15uy
+                && this.BG <= 15uy
+        end
+
     type public Encoder =
         private new(binWriter: BinaryWriter,
                     input: byte list,
@@ -107,6 +128,13 @@ module Encoder =
 
             this.binWriter.Write(chunk)
 
+        member private this.WriteLumaChunk(lumaDiff: LumaDiff) =
+            let chunk1 = 0b10_000000uy ||| (lumaDiff.G <<< 8)
+            let chunk2 = (lumaDiff.RG <<< 4) ||| lumaDiff.BG
+
+            this.binWriter.Write(chunk1)
+            this.binWriter.Write(chunk2)
+
         member private _.CalculateIndex(pixel: Pixel) =
             int (
                 pixel.R * 3uy
@@ -133,9 +161,12 @@ module Encoder =
                     this.WriteIndexChunk(index)
                 elif pixel.A = prev.A then
                     let diff = Diff(prev, pixel)
+                    let lumaDiff = LumaDiff(prev, pixel)
 
                     if diff.IsSmall() then
                         this.WriteDiffChunk(diff)
+                    elif lumaDiff.IsSmall() then
+                        this.WriteLumaChunk(lumaDiff)
                     else
                         this.WriteRgbChunk(pixel)
 

@@ -176,3 +176,28 @@ let ``Should have index chunk`` () =
 
     let actual = bytes[22]
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have diff chunk`` () =
+    let expected = 0b01_11_10_10uy
+
+    let input =
+        [ 128uy // RGB chunk
+          0uy
+          0uy
+          255uy
+
+          129uy // diff chunk
+          0uy
+          0uy
+          255uy ]
+
+    let width = 2
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+
+    let actual = bytes[18]
+    Assert.Equal(expected, actual)

@@ -14,6 +14,21 @@ module Encoder =
     [<Struct>]
     type Pixel = { R: byte; G: byte; B: byte; A: byte }
 
+    type Diff =
+        struct
+            val R: byte
+            val G: byte
+            val B: byte
+
+            new(prev: Pixel, next: Pixel) =
+                { R = next.R - prev.R + 2uy
+                  G = next.G - prev.G + 2uy
+                  B = next.B - prev.B + 2uy }
+
+            member this.IsSmall() =
+                this.R <= 3uy && this.G <= 3uy && this.B <= 3uy
+        end
+
     type public Encoder =
         private new(binWriter: BinaryWriter,
                     input: byte list,
@@ -83,6 +98,15 @@ module Encoder =
 
         member private this.WriteIndexChunk(index: int) = this.binWriter.Write(byte index)
 
+        member private this.WriteDiffChunk(diff: Diff) =
+            let chunk =
+                0b01_000000uy
+                ||| (diff.R <<< 4)
+                ||| (diff.G <<< 2)
+                ||| (diff.B <<< 0)
+
+            this.binWriter.Write(chunk)
+
         member private _.CalculateIndex(pixel: Pixel) =
             int (
                 pixel.R * 3uy
@@ -108,7 +132,13 @@ module Encoder =
                 if this.cache[index] = pixel then
                     this.WriteIndexChunk(index)
                 elif pixel.A = prev.A then
-                    this.WriteRgbChunk(pixel)
+                    let diff = Diff(prev, pixel)
+
+                    if diff.IsSmall() then
+                        this.WriteDiffChunk(diff)
+                    else
+                        this.WriteRgbChunk(pixel)
+
                     this.cache[ index ] <- pixel
                 else
                     this.WriteRgbaChunk(pixel)

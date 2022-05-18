@@ -59,6 +59,7 @@ module Encoder =
             colorSpace: ColorSpace
         ) =
         let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
+        let mutable runLength = 0uy
         let cache: Pixel [] = Array.zeroCreate 64
 
         member private _.writeBigEndian(value: int) =
@@ -108,6 +109,11 @@ module Encoder =
             binWriter.Write(chunk1)
             binWriter.Write(chunk2)
 
+        member private _.WriteRunChunk() =
+            let chunk = 0b11_000000uy ||| (runLength - 1uy)
+            binWriter.Write(chunk)
+            runLength <- 0uy
+
         member private _.CalculateIndex(pixel: Pixel) =
             int (
                 pixel.R * 3uy
@@ -129,7 +135,12 @@ module Encoder =
         member private this.WriteChunk(pixel) =
             let index = this.CalculateIndex(pixel)
 
-            if cache[index] = pixel then
+            if prev = pixel then
+                runLength <- runLength + 1uy
+            elif runLength > 0uy then
+                this.WriteRunChunk()
+                this.WriteChunk(pixel)
+            elif cache[index] = pixel then
                 this.WriteIndexChunk(index)
             elif pixel.A = prev.A then
                 let diff = Diff(prev, pixel)
@@ -149,7 +160,7 @@ module Encoder =
 
             prev <- pixel
 
-        member private this.WriteFooter() =
+        member private _.WriteFooter() =
             binWriter.Write(byte 0)
             binWriter.Write(byte 0)
             binWriter.Write(byte 0)

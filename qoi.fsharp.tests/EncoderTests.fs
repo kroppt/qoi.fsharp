@@ -276,3 +276,43 @@ let ``Should have luma chunk wraparound`` () =
 
     let actual = ArraySegment<byte>(bytes, 18, 2)
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have run chunk`` () =
+    let expected = 0b11_000010uy
+
+    let input =
+        [ 128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          129uy
+          0uy
+          255uy ]
+
+    let width = 5
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encode input width height channels colorSpace
+
+    let actual = bytes[18]
+    Assert.Equal(expected, actual)

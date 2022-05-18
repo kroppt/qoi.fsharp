@@ -63,4 +63,16 @@ module Encoder =
             this.binWriter.Write(byte this.channels)
             this.binWriter.Write(byte this.colorSpace)
 
-        member private this.Encode() = this.WriteHeader()
+        member private this.WriteFooter() =
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 0)
+            this.binWriter.Write(byte 1)
+
+        member private this.Encode() =
+            this.WriteHeader()
+            this.WriteFooter()

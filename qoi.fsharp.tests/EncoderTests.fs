@@ -18,14 +18,13 @@ let ``Should succeed`` () =
 
 [<Fact>]
 let ``Should have correct header`` () =
-    let input = []
-
     let writeBigEndian (binWriter: BinaryWriter) (value: int) =
         binWriter.Write(byte ((value >>> 24) &&& 0xFF))
         binWriter.Write(byte ((value >>> 16) &&& 0xFF))
         binWriter.Write(byte ((value >>> 8) &&& 0xFF))
         binWriter.Write(byte ((value >>> 0) &&& 0xFF))
 
+    let input = [ 0uy; 0uy; 0uy; 255uy ]
     let width = 1
     let height = 1
     let channels = Channels.Rgba
@@ -45,9 +44,30 @@ let ``Should have correct header`` () =
 
             memStream.ToArray())
 
-    let input = [ 0uy; 0uy; 0uy; 255uy ]
-
     let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
 
     let actual = new ArraySegment<byte>(bytes, 0, 14)
+    Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have correct end marker`` () =
+    let expected =
+        [ 0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let input = [ 100uy; 0uy; 0uy; 255uy ]
+    let width = 1
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+
+    let actual = new ArraySegment<byte>(bytes, bytes.Length - 8, 8)
     Assert.Equal(expected, actual)

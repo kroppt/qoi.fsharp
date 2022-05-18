@@ -11,6 +11,8 @@ module Encoder =
         | SRgb = 0
         | Linear = 1
 
+    type Pixel = { R: byte; G: byte; B: byte; A: byte }
+
     type public Encoder =
         private new(binWriter: BinaryWriter,
                     input: byte list,
@@ -63,15 +65,35 @@ module Encoder =
             this.binWriter.Write(byte this.channels)
             this.binWriter.Write(byte this.colorSpace)
 
+        member private this.WriteRgbaChunk(pixel: Pixel) =
+            this.binWriter.Write(0b11111111uy)
+            this.binWriter.Write(pixel.R)
+            this.binWriter.Write(pixel.G)
+            this.binWriter.Write(pixel.B)
+            this.binWriter.Write(pixel.A)
+
+        member private this.WriteRgbChunk(pixel: Pixel) =
+            this.binWriter.Write(0b11111110uy)
+            this.binWriter.Write(pixel.R)
+            this.binWriter.Write(pixel.G)
+            this.binWriter.Write(pixel.B)
+
         member private this.WriteChunks() =
-            let pixels = this.input |> List.chunkBySize 4
+            let prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
 
-            pixels
-            |> List.iter (fun pixel ->
-                this.binWriter.Write(0b11111111uy)
+            this.input
+            |> List.chunkBySize 4
+            |> List.iter (fun bytes ->
+                let pixel =
+                    { R = bytes[0]
+                      G = bytes[1]
+                      B = bytes[2]
+                      A = bytes[3] }
 
-                pixel
-                |> List.iter (fun color -> this.binWriter.Write(color)))
+                if pixel.A = prev.A then
+                    this.WriteRgbChunk(pixel)
+                else
+                    this.WriteRgbaChunk(pixel))
 
         member private this.WriteFooter() =
             this.binWriter.Write(byte 0)

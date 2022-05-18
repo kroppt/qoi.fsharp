@@ -106,3 +106,38 @@ let ``Should have RGBA chunk`` () =
 
     let actual = ArraySegment<byte>(bytes, 14, 5)
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have RGB chunk`` () =
+    let expected = [ 0b11111110uy; 128uy; 0uy; 0uy ]
+
+    let input =
+        [ 128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy ]
+
+    let width = 2
+    let height = 2
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+
+    let actual = ArraySegment<byte>(bytes, 14, 4)
+    Assert.Equal(expected, actual)

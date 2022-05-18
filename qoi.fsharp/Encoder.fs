@@ -11,6 +11,7 @@ module Encoder =
         | SRgb = 0
         | Linear = 1
 
+    [<Struct>]
     type Pixel = { R: byte; G: byte; B: byte; A: byte }
 
     type public Encoder =
@@ -25,7 +26,8 @@ module Encoder =
               width = width
               height = height
               channels = channels
-              colorSpace = colorSpace }
+              colorSpace = colorSpace
+              cache = Array.zeroCreate 64 }
 
         val binWriter: BinaryWriter
         val input: byte list
@@ -33,6 +35,7 @@ module Encoder =
         val height: int
         val channels: Channels
         val colorSpace: ColorSpace
+        val cache: Pixel []
 
         static member public Encode
             (
@@ -78,8 +81,18 @@ module Encoder =
             this.binWriter.Write(pixel.G)
             this.binWriter.Write(pixel.B)
 
+        member private this.WriteIndexChunk(index: int) = this.binWriter.Write(byte index)
+
+        member private _.CalculateIndex(pixel: Pixel) =
+            int (
+                pixel.R * 3uy
+                + pixel.G * 5uy
+                + pixel.B * 7uy
+                + pixel.A * 11uy
+            ) % 64
+
         member private this.WriteChunks() =
-            let prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
+            let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
 
             this.input
             |> List.chunkBySize 4
@@ -90,10 +103,18 @@ module Encoder =
                       B = bytes[2]
                       A = bytes[3] }
 
-                if pixel.A = prev.A then
+                let index = this.CalculateIndex(pixel)
+
+                if this.cache[index] = pixel then
+                    this.WriteIndexChunk(index)
+                elif pixel.A = prev.A then
                     this.WriteRgbChunk(pixel)
+                    this.cache[ index ] <- pixel
                 else
-                    this.WriteRgbaChunk(pixel))
+                    this.WriteRgbaChunk(pixel)
+                    this.cache[ index ] <- pixel
+
+                prev <- pixel)
 
         member private this.WriteFooter() =
             this.binWriter.Write(byte 0)

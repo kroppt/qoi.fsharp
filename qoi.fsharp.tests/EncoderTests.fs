@@ -13,7 +13,7 @@ let ``Should succeed`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    Encoder.Encode(input, width, height, channels, colorSpace)
+    Encode input width height channels colorSpace
     |> ignore
 
 [<Fact>]
@@ -44,7 +44,7 @@ let ``Should have correct header`` () =
 
             memStream.ToArray())
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = ArraySegment<byte>(bytes, 0, 14)
     Assert.Equal(expected, actual)
@@ -67,7 +67,7 @@ let ``Should have correct end marker`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = ArraySegment<byte>(bytes, bytes.Length - 8, 8)
     Assert.Equal(expected, actual)
@@ -102,7 +102,7 @@ let ``Should have RGBA chunk`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = ArraySegment<byte>(bytes, 14, 5)
     Assert.Equal(expected, actual)
@@ -137,7 +137,7 @@ let ``Should have RGB chunk`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = ArraySegment<byte>(bytes, 14, 4)
     Assert.Equal(expected, actual)
@@ -172,7 +172,7 @@ let ``Should have index chunk`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = bytes[22]
     Assert.Equal(expected, actual)
@@ -197,7 +197,7 @@ let ``Should have diff chunk`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = bytes[18]
     Assert.Equal(expected, actual)
@@ -222,7 +222,7 @@ let ``Should have diff chunk with wraparound`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = bytes[18]
     Assert.Equal(expected, actual)
@@ -247,7 +247,7 @@ let ``Should have luma chunk`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+    let bytes = Encode input width height channels colorSpace
 
     let actual = ArraySegment<byte>(bytes, 18, 2)
     Assert.Equal(expected, actual)

@@ -12,128 +12,101 @@ module Encoder =
         | Linear = 1
 
     [<Struct>]
-    type Pixel = { R: byte; G: byte; B: byte; A: byte }
+    type private Pixel = { R: byte; G: byte; B: byte; A: byte }
 
-    type Diff =
-        struct
-            val R: byte
-            val G: byte
-            val B: byte
+    [<Struct>]
+    type private Diff =
+        val R: byte
+        val G: byte
+        val B: byte
 
-            new(prev: Pixel, next: Pixel) =
-                { R = next.R - prev.R + 2uy
-                  G = next.G - prev.G + 2uy
-                  B = next.B - prev.B + 2uy }
+        new(prev: Pixel, next: Pixel) =
+            { R = next.R - prev.R + 2uy
+              G = next.G - prev.G + 2uy
+              B = next.B - prev.B + 2uy }
 
-            member this.IsSmall() =
-                this.R <= 3uy && this.G <= 3uy && this.B <= 3uy
-        end
+        member this.IsSmall() =
+            this.R <= 3uy && this.G <= 3uy && this.B <= 3uy
 
-    type LumaDiff =
-        struct
-            val G: byte
-            val RG: byte
-            val BG: byte
+    [<Struct>]
+    type private LumaDiff =
+        val G: byte
+        val RG: byte
+        val BG: byte
 
-            new(prev: Pixel, next: Pixel) =
-                let dr = next.R - prev.R
-                let dg = next.G - prev.G
-                let db = next.B - prev.B
+        new(prev: Pixel, next: Pixel) =
+            let dr = next.R - prev.R
+            let dg = next.G - prev.G
+            let db = next.B - prev.B
 
-                { G = dg + 32uy
-                  RG = dr - dg + 8uy
-                  BG = db - dg + 8uy }
+            { G = dg + 32uy
+              RG = dr - dg + 8uy
+              BG = db - dg + 8uy }
 
-            member this.IsSmall() =
-                this.G <= 63uy
-                && this.RG <= 15uy
-                && this.BG <= 15uy
-        end
+        member this.IsSmall() =
+            this.G <= 63uy
+            && this.RG <= 15uy
+            && this.BG <= 15uy
 
-    type public Encoder =
-        private new(binWriter: BinaryWriter,
-                    input: byte list,
-                    width: int,
-                    height: int,
-                    channels: Channels,
-                    colorSpace: ColorSpace) =
-            { binWriter = binWriter
-              input = input
-              width = width
-              height = height
-              channels = channels
-              colorSpace = colorSpace
-              cache = Array.zeroCreate 64 }
+    [<Class>]
+    type private Encoder
+        (
+            binWriter: BinaryWriter,
+            input: byte list,
+            width: int,
+            height: int,
+            channels: Channels,
+            colorSpace: ColorSpace
+        ) =
+        let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
+        let cache: Pixel [] = Array.zeroCreate 64
 
-        val binWriter: BinaryWriter
-        val input: byte list
-        val width: int
-        val height: int
-        val channels: Channels
-        val colorSpace: ColorSpace
-        val cache: Pixel []
-
-        static member public Encode
-            (
-                input: byte list,
-                width: int,
-                height: int,
-                channels: Channels,
-                colorSpace: ColorSpace
-            ) : byte [] =
-            using (new MemoryStream()) (fun memStream ->
-                using (new BinaryWriter(memStream)) (fun binWriter ->
-                    let encoder = new Encoder(binWriter, input, width, height, channels, colorSpace)
-                    encoder.Encode())
-
-                memStream.ToArray())
-
-        member private this.writeBigEndian(value: int) =
-            this.binWriter.Write(byte ((value >>> 24) &&& 0xFF))
-            this.binWriter.Write(byte ((value >>> 16) &&& 0xFF))
-            this.binWriter.Write(byte ((value >>> 8) &&& 0xFF))
-            this.binWriter.Write(byte ((value >>> 0) &&& 0xFF))
+        member private _.writeBigEndian(value: int) =
+            binWriter.Write(byte ((value >>> 24) &&& 0xFF))
+            binWriter.Write(byte ((value >>> 16) &&& 0xFF))
+            binWriter.Write(byte ((value >>> 8) &&& 0xFF))
+            binWriter.Write(byte ((value >>> 0) &&& 0xFF))
 
         member private this.WriteHeader() =
-            this.binWriter.Write(byte 'q')
-            this.binWriter.Write(byte 'o')
-            this.binWriter.Write(byte 'i')
-            this.binWriter.Write(byte 'f')
-            this.writeBigEndian (this.width)
-            this.writeBigEndian (this.height)
-            this.binWriter.Write(byte this.channels)
-            this.binWriter.Write(byte this.colorSpace)
+            binWriter.Write(byte 'q')
+            binWriter.Write(byte 'o')
+            binWriter.Write(byte 'i')
+            binWriter.Write(byte 'f')
+            this.writeBigEndian (width)
+            this.writeBigEndian (height)
+            binWriter.Write(byte channels)
+            binWriter.Write(byte colorSpace)
 
-        member private this.WriteRgbaChunk(pixel: Pixel) =
-            this.binWriter.Write(0b11111111uy)
-            this.binWriter.Write(pixel.R)
-            this.binWriter.Write(pixel.G)
-            this.binWriter.Write(pixel.B)
-            this.binWriter.Write(pixel.A)
+        member private _.WriteRgbaChunk(pixel: Pixel) =
+            binWriter.Write(0b11111111uy)
+            binWriter.Write(pixel.R)
+            binWriter.Write(pixel.G)
+            binWriter.Write(pixel.B)
+            binWriter.Write(pixel.A)
 
-        member private this.WriteRgbChunk(pixel: Pixel) =
-            this.binWriter.Write(0b11111110uy)
-            this.binWriter.Write(pixel.R)
-            this.binWriter.Write(pixel.G)
-            this.binWriter.Write(pixel.B)
+        member private _.WriteRgbChunk(pixel: Pixel) =
+            binWriter.Write(0b11111110uy)
+            binWriter.Write(pixel.R)
+            binWriter.Write(pixel.G)
+            binWriter.Write(pixel.B)
 
-        member private this.WriteIndexChunk(index: int) = this.binWriter.Write(byte index)
+        member private _.WriteIndexChunk(index: int) = binWriter.Write(byte index)
 
-        member private this.WriteDiffChunk(diff: Diff) =
+        member private _.WriteDiffChunk(diff: Diff) =
             let chunk =
                 0b01_000000uy
                 ||| (diff.R <<< 4)
                 ||| (diff.G <<< 2)
                 ||| (diff.B <<< 0)
 
-            this.binWriter.Write(chunk)
+            binWriter.Write(chunk)
 
-        member private this.WriteLumaChunk(lumaDiff: LumaDiff) =
+        member private _.WriteLumaChunk(lumaDiff: LumaDiff) =
             let chunk1 = 0b10_000000uy ||| (lumaDiff.G <<< 8)
             let chunk2 = (lumaDiff.RG <<< 4) ||| lumaDiff.BG
 
-            this.binWriter.Write(chunk1)
-            this.binWriter.Write(chunk2)
+            binWriter.Write(chunk1)
+            binWriter.Write(chunk2)
 
         member private _.CalculateIndex(pixel: Pixel) =
             int (
@@ -144,50 +117,63 @@ module Encoder =
             ) % 64
 
         member private this.WriteChunks() =
-            let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
-
-            this.input
+            input
             |> List.chunkBySize 4
-            |> List.iter (fun bytes ->
-                let pixel =
-                    { R = bytes[0]
-                      G = bytes[1]
-                      B = bytes[2]
-                      A = bytes[3] }
+            |> List.map (fun bytes ->
+                { R = bytes[0]
+                  G = bytes[1]
+                  B = bytes[2]
+                  A = bytes[3] })
+            |> List.iter (fun pixel -> this.WriteChunk(pixel))
 
-                let index = this.CalculateIndex(pixel)
+        member private this.WriteChunk(pixel) =
+            let index = this.CalculateIndex(pixel)
 
-                if this.cache[index] = pixel then
-                    this.WriteIndexChunk(index)
-                elif pixel.A = prev.A then
-                    let diff = Diff(prev, pixel)
-                    let lumaDiff = LumaDiff(prev, pixel)
+            if cache[index] = pixel then
+                this.WriteIndexChunk(index)
+            elif pixel.A = prev.A then
+                let diff = Diff(prev, pixel)
+                let lumaDiff = LumaDiff(prev, pixel)
 
-                    if diff.IsSmall() then
-                        this.WriteDiffChunk(diff)
-                    elif lumaDiff.IsSmall() then
-                        this.WriteLumaChunk(lumaDiff)
-                    else
-                        this.WriteRgbChunk(pixel)
-
-                    this.cache[ index ] <- pixel
+                if diff.IsSmall() then
+                    this.WriteDiffChunk(diff)
+                elif lumaDiff.IsSmall() then
+                    this.WriteLumaChunk(lumaDiff)
                 else
-                    this.WriteRgbaChunk(pixel)
-                    this.cache[ index ] <- pixel
+                    this.WriteRgbChunk(pixel)
 
-                prev <- pixel)
+                cache[index] <- pixel
+            else
+                this.WriteRgbaChunk(pixel)
+                cache[index] <- pixel
+
+            prev <- pixel
 
         member private this.WriteFooter() =
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 0)
-            this.binWriter.Write(byte 1)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 0)
+            binWriter.Write(byte 1)
 
-        member private this.Encode() =
+        member public this.Encode() =
             this.WriteHeader()
             this.WriteChunks()
             this.WriteFooter()
+
+    let public Encode
+        (input: byte list)
+        (width: int)
+        (height: int)
+        (channels: Channels)
+        (colorSpace: ColorSpace)
+        : byte [] =
+        using (new MemoryStream()) (fun memStream ->
+            using (new BinaryWriter(memStream)) (fun binWriter ->
+                Encoder(binWriter, input, width, height, channels, colorSpace)
+                    .Encode())
+
+            memStream.ToArray())

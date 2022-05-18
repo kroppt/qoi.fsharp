@@ -201,3 +201,28 @@ let ``Should have diff chunk`` () =
 
     let actual = bytes[18]
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have diff chunk with wraparound`` () =
+    let expected = 0b01_10_11_01uy
+
+    let input =
+        [ 128uy // RGB chunk
+          255uy
+          0uy
+          255uy
+
+          128uy // diff chunk
+          0uy
+          255uy
+          255uy ]
+
+    let width = 2
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encoder.Encode(input, width, height, channels, colorSpace)
+
+    let actual = bytes[18]
+    Assert.Equal(expected, actual)

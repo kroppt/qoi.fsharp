@@ -136,6 +136,7 @@ module Encoder =
 
             if prev = pixel && runLength < 62uy then
                 runLength <- runLength + 1uy
+                cache[index] <- pixel
             elif runLength > 0uy then
                 this.WriteRunChunk()
                 runLength <- 0uy

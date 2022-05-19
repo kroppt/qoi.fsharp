@@ -343,3 +343,46 @@ let ``Should have max length run chunk`` () =
 
     let actual = ArraySegment<byte>(bytes, 14, 6)
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have index chunk after run`` () =
+    let expected =
+        [ 0b11_000001uy // run 2
+
+          0b11111110uy // RGB
+          127uy
+          0uy
+          0uy
+
+          0b00_110101uy ] // index 53
+
+    let input =
+        [ 0uy
+          0uy
+          0uy
+          255uy
+
+          0uy
+          0uy
+          0uy
+          255uy
+
+          127uy
+          0uy
+          0uy
+          255uy
+
+          0uy
+          0uy
+          0uy
+          255uy ]
+
+    let width = 4
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encode input width height channels colorSpace
+
+    let actual = ArraySegment<byte>(bytes, 14, 6)
+    Assert.Equal(expected, actual)

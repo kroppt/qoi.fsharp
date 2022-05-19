@@ -386,3 +386,28 @@ let ``Should have index chunk after run`` () =
 
     let actual = ArraySegment<byte>(bytes, 14, 6)
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should have run chunk before end marker`` () =
+    let expected = 0b11_000000uy
+
+    let input =
+        [ 128uy
+          0uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy ]
+
+    let width = 2
+    let height = 1
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
+
+    let bytes = Encode input width height channels colorSpace
+
+    let actual = bytes[bytes.Length - 9]
+    Assert.Equal(expected, actual)

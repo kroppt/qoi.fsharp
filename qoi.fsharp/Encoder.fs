@@ -174,6 +174,10 @@ module Encoder =
         member public this.Encode() =
             this.WriteHeader()
             this.WriteChunks()
+
+            if runLength > 0uy then
+                this.WriteRunChunk()
+
             this.WriteFooter()
 
     let public Encode

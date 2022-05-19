@@ -112,7 +112,6 @@ module Encoder =
         member private _.WriteRunChunk() =
             let chunk = 0b11_000000uy ||| (runLength - 1uy)
             binWriter.Write(chunk)
-            runLength <- 0uy
 
         member private _.CalculateIndex(pixel: Pixel) =
             int (
@@ -135,10 +134,11 @@ module Encoder =
         member private this.WriteChunk(pixel) =
             let index = this.CalculateIndex(pixel)
 
-            if prev = pixel then
+            if prev = pixel && runLength < 62uy then
                 runLength <- runLength + 1uy
             elif runLength > 0uy then
                 this.WriteRunChunk()
+                runLength <- 0uy
                 this.WriteChunk(pixel)
             elif cache[index] = pixel then
                 this.WriteIndexChunk(index)

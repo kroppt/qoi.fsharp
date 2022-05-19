@@ -4,12 +4,22 @@ module Encoder =
     open System.IO
 
     type public Channels =
-        | Rgb = 3
-        | Rgba = 4
+        | Rgb
+        | Rgba
+
+    let public getChannelsByte channels =
+        match channels with
+        | Rgb -> 3uy
+        | Rgba -> 4uy
 
     type public ColorSpace =
-        | SRgb = 0
-        | Linear = 1
+        | SRgb
+        | Linear
+
+    let public getColorSpaceByte colorSpace =
+        match colorSpace with
+        | SRgb -> 0uy
+        | Linear -> 1uy
 
     [<Struct>]
     type private Pixel = { R: byte; G: byte; B: byte; A: byte }
@@ -75,8 +85,8 @@ module Encoder =
             binWriter.Write(byte 'f')
             this.writeBigEndian (width)
             this.writeBigEndian (height)
-            binWriter.Write(byte channels)
-            binWriter.Write(byte colorSpace)
+            binWriter.Write(getChannelsByte channels)
+            binWriter.Write(getColorSpaceByte colorSpace)
 
         member private _.WriteRgbaChunk(pixel: Pixel) =
             binWriter.Write(0b11111111uy)
@@ -123,12 +133,19 @@ module Encoder =
 
         member private this.WriteChunks() =
             input
-            |> List.chunkBySize 4
+            |> List.chunkBySize (
+                match channels with
+                | Rgb -> 3
+                | Rgba -> 4
+            )
             |> List.map (fun bytes ->
                 { R = bytes[0]
                   G = bytes[1]
                   B = bytes[2]
-                  A = bytes[3] })
+                  A =
+                    match channels with
+                    | Rgb -> 255uy
+                    | Rgba -> bytes[3] })
             |> List.iter (fun pixel -> this.WriteChunk(pixel))
 
         member private this.WriteChunk(pixel) =

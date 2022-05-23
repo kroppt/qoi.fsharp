@@ -429,3 +429,20 @@ let ``Should encode 10x10 correctly`` () =
     let actual = Encode (List.ofArray input) width height channels colorSpace
 
     Assert.Equal<byte>(expected, actual)
+
+[<Fact>]
+let ``Should encode sample correctly`` () =
+    let expected = File.ReadAllBytes("testdata/sample.qoi")
+
+    let (input, width, height) =
+        using (SixLabors.ImageSharp.Image.Load<Rgba32> "testdata/sample.png") (fun png ->
+            let input = Array.zeroCreate<byte> (png.Width * png.Height * 4)
+            png.CopyPixelDataTo input
+            (input, png.Width, png.Height))
+
+    let channels = Rgba
+    let colorSpace = SRgb
+
+    let actual = Encode (List.ofArray input) width height channels colorSpace
+
+    Assert.Equal<byte>(expected, actual)

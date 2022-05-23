@@ -2,6 +2,7 @@ module EncoderTests
 
 open Xunit
 open Qoi.Fsharp.Encoder
+open Qoi.Fsharp.Header
 open System.IO
 open System
 open SixLabors.ImageSharp.PixelFormats
@@ -11,8 +12,8 @@ let ``Should succeed`` () =
     let input = [ 0uy; 0uy; 0uy; 255uy ]
     let width = 1
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     Encode input width height channels colorSpace
     |> ignore
@@ -28,8 +29,8 @@ let ``Should have correct header`` () =
     let input = [ 0uy; 0uy; 0uy; 255uy ]
     let width = 1
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let expected =
         using (new MemoryStream()) (fun memStream ->
@@ -40,8 +41,8 @@ let ``Should have correct header`` () =
                 binWriter.Write(byte 'f')
                 writeBigEndian binWriter width
                 writeBigEndian binWriter height
-                binWriter.Write(getChannelsByte channels)
-                binWriter.Write(getColorSpaceByte colorSpace))
+                binWriter.Write(byte channels)
+                binWriter.Write(byte colorSpace))
 
             memStream.ToArray())
 
@@ -65,8 +66,8 @@ let ``Should have correct end marker`` () =
     let input = [ 100uy; 0uy; 0uy; 255uy ]
     let width = 1
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -100,8 +101,8 @@ let ``Should have RGBA chunk`` () =
 
     let width = 2
     let height = 2
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -135,8 +136,8 @@ let ``Should have RGB chunk`` () =
 
     let width = 2
     let height = 2
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -170,8 +171,8 @@ let ``Should have index chunk`` () =
 
     let width = 2
     let height = 2
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -195,8 +196,8 @@ let ``Should have diff chunk`` () =
 
     let width = 2
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -220,8 +221,8 @@ let ``Should have diff chunk with wraparound`` () =
 
     let width = 2
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -245,8 +246,8 @@ let ``Should have luma chunk`` () =
 
     let width = 2
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -270,8 +271,8 @@ let ``Should have luma chunk wraparound`` () =
 
     let width = 2
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -310,8 +311,8 @@ let ``Should have run chunk`` () =
 
     let width = 5
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -337,8 +338,8 @@ let ``Should have max length run chunk`` () =
 
     let width = 13
     let height = 5
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -380,8 +381,8 @@ let ``Should have index chunk after run`` () =
 
     let width = 4
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -405,8 +406,8 @@ let ``Should have run chunk before end marker`` () =
 
     let width = 2
     let height = 1
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let bytes = Encode input width height channels colorSpace
 
@@ -423,8 +424,8 @@ let ``Should encode 10x10 correctly`` () =
             png.CopyPixelDataTo input
             (input, png.Width, png.Height))
 
-    let channels = Rgb
-    let colorSpace = SRgb
+    let channels = Channels.Rgb
+    let colorSpace = ColorSpace.SRgb
 
     let actual = Encode (List.ofArray input) width height channels colorSpace
 
@@ -440,8 +441,8 @@ let ``Should encode sample correctly`` () =
             png.CopyPixelDataTo input
             (input, png.Width, png.Height))
 
-    let channels = Rgba
-    let colorSpace = SRgb
+    let channels = Channels.Rgba
+    let colorSpace = ColorSpace.SRgb
 
     let actual = Encode (List.ofArray input) width height channels colorSpace
 

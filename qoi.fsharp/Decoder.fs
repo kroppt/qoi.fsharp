@@ -2,10 +2,14 @@ namespace Qoi.Fsharp
 
 module Decoder =
     open System.IO
+    open Header
 
     type public Image = { Width: uint; Height: uint }
 
-    type public DecodeError = | BadMagicBytes
+    type public DecodeError =
+        | BadMagicBytes
+        | BadChannelsValue
+        | BadColorSpaceValue
 
     exception DecodeException of DecodeError
 
@@ -33,9 +37,33 @@ module Decoder =
             let height = readBigEndian ()
             (width, height)
 
-        let createImage (width: uint, height: uint) = { Width = width; Height = height }
+        let parseChannels () =
+            let channels = binReader.ReadByte()
+            let channels = Channels.ParseByte channels
 
-        parseMagic () |> parseDimensions |> createImage
+            match channels with
+            | None -> raise (DecodeException BadChannelsValue)
+            | Some (_) -> ()
+
+        let parseColorSpace () =
+            let colorSpace = binReader.ReadByte()
+            let colorSpace = ColorSpace.ParseByte colorSpace
+
+            match colorSpace with
+            | None -> raise (DecodeException BadColorSpaceValue)
+            | Some (_) -> ()
+
+        let createImage width height = { Width = width; Height = height }
+
+        parseMagic ()
+
+        let (width, height) = parseDimensions ()
+
+        parseChannels ()
+
+        parseColorSpace ()
+
+        createImage width height
 
     let public Decode (input: byte list) : Result<Image, DecodeError> =
         using (new MemoryStream(Array.ofList input)) (fun memStream ->

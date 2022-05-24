@@ -4,6 +4,11 @@ open Xunit
 open Qoi.Fsharp.Decoder
 open Qoi.Fsharp.Header
 
+let assertError (expected: DecodeError) (actual: Result<Image, DecodeError>) =
+    match actual with
+    | Ok _ -> Assert.True(false, $"expected {expected} but succeeded")
+    | Error actual -> Assert.Equal(expected, actual)
+
 [<Fact>]
 let ``Should succeed`` () =
     let input =
@@ -43,7 +48,7 @@ let ``Should succeed`` () =
 
 [<Fact>]
 let ``Should fail parsing bad magic bytes`` () =
-    let expected = Error(BadMagicBytes)
+    let expected = BadMagicBytes
 
     let input =
         [ byte 'a'
@@ -76,12 +81,12 @@ let ``Should fail parsing bad magic bytes`` () =
 
     let actual = Decode input
 
-    Assert.Equal(expected, actual)
+    assertError expected actual
 
 [<Fact>]
 let ``Should correctly parse width and height`` () =
-    let expectedWidth = 1u
-    let expectedHeight = 1u
+    let expectedWidth = 0u
+    let expectedHeight = 0u
 
     let input =
         [ byte 'q'
@@ -102,11 +107,6 @@ let ``Should correctly parse width and height`` () =
           byte Channels.Rgb
 
           byte ColorSpace.SRgb
-
-          0b11111110uy // RGB tag
-          128uy // red
-          0uy // green
-          0uy // blue
 
           0uy
           0uy
@@ -163,9 +163,7 @@ let ``Should fail parsing bad channels`` () =
 
     let actual = Decode input
 
-    match actual with
-    | Ok _ -> Assert.True(false, "expected error but succeeded")
-    | Error error -> Assert.Equal(expected, error)
+    assertError expected actual
 
 [<Fact>]
 let ``Should fail parsing bad color space`` () =
@@ -205,6 +203,103 @@ let ``Should fail parsing bad color space`` () =
 
     let actual = Decode input
 
-    match actual with
-    | Ok _ -> Assert.True(false, "expected error but succeeded")
-    | Error error -> Assert.Equal(expected, error)
+    assertError expected actual
+
+[<Fact>]
+let ``Should fail parsing missing end marker`` () =
+    let expected = MissingEndMarker
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb ]
+
+    let actual = Decode input
+
+    assertError expected actual
+
+[<Fact>]
+let ``Should fail parsing partial end marker`` () =
+    let expected = MissingEndMarker
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy ]
+
+    let actual = Decode input
+
+    assertError expected actual
+
+[<Fact>]
+let ``Should fail parsing incorrect end marker`` () =
+    let expected = IncorrectEndMarker
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy
+          1uy
+          1uy ]
+
+    let actual = Decode input
+
+    assertError expected actual

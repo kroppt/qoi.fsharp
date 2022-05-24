@@ -10,6 +10,8 @@ module Decoder =
         | BadMagicBytes
         | BadChannelsValue
         | BadColorSpaceValue
+        | MissingEndMarker
+        | IncorrectEndMarker
 
     exception DecodeException of DecodeError
 
@@ -53,6 +55,25 @@ module Decoder =
             | None -> raise (DecodeException BadColorSpaceValue)
             | Some (_) -> ()
 
+        let parseEndMarker () =
+            let correctEndMarker =
+                [| 0uy
+                   0uy
+                   0uy
+                   0uy
+                   0uy
+                   0uy
+                   0uy
+                   1uy |]
+
+            let actualEndMarker = binReader.ReadBytes(correctEndMarker.Length)
+
+            if actualEndMarker.Length <> correctEndMarker.Length then
+                raise (DecodeException MissingEndMarker)
+
+            if actualEndMarker <> correctEndMarker then
+                raise (DecodeException IncorrectEndMarker)
+
         let createImage width height = { Width = width; Height = height }
 
         parseMagic ()
@@ -62,6 +83,8 @@ module Decoder =
         parseChannels ()
 
         parseColorSpace ()
+
+        parseEndMarker ()
 
         createImage width height
 

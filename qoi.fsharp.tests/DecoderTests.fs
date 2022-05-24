@@ -6,8 +6,6 @@ open Qoi.Fsharp.Header
 
 [<Fact>]
 let ``Should succeed`` () =
-    let expected = DecodeResult.Ok
-
     let input =
         [ byte 'q'
           byte 'o'
@@ -39,11 +37,13 @@ let ``Should succeed`` () =
 
     let actual = Decode input
 
-    Assert.Equal(expected, actual)
+    match actual with
+    | Ok _ -> ()
+    | Error error -> Assert.True(false, $"failed with {error}")
 
 [<Fact>]
 let ``Should fail parsing bad magic bytes`` () =
-    let expected = DecodeResult.BadMagicBytes
+    let expected = Error(BadMagicBytes)
 
     let input =
         [ byte 'a'
@@ -77,3 +77,50 @@ let ``Should fail parsing bad magic bytes`` () =
     let actual = Decode input
 
     Assert.Equal(expected, actual)
+
+[<Fact>]
+let ``Should correctly parse width and height`` () =
+    let expectedWidth = 1u
+    let expectedHeight = 1u
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          byte expectedWidth
+
+          0uy
+          0uy
+          0uy
+          byte expectedHeight
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          0b11111110uy // RGB tag
+          128uy // red
+          0uy // green
+          0uy // blue
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    match actual with
+    | Ok image ->
+        Assert.Equal(expectedWidth, image.Width)
+        Assert.Equal(expectedHeight, image.Height)
+    | Error error -> Assert.True(false, $"failed with {error}")

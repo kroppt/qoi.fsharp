@@ -4,7 +4,10 @@ module Decoder =
     open System.IO
     open Header
 
-    type public Image = { Width: uint; Height: uint }
+    type public Image =
+        { Width: uint
+          Height: uint
+          Channels: Channels }
 
     type public DecodeError =
         | BadMagicBytes
@@ -45,7 +48,7 @@ module Decoder =
 
             match channels with
             | None -> raise (DecodeException BadChannelsValue)
-            | Some (_) -> ()
+            | Some channels -> channels
 
         let parseColorSpace () =
             let colorSpace = binReader.ReadByte()
@@ -74,19 +77,22 @@ module Decoder =
             if actualEndMarker <> correctEndMarker then
                 raise (DecodeException IncorrectEndMarker)
 
-        let createImage width height = { Width = width; Height = height }
+        let createImage width height channels =
+            { Width = width
+              Height = height
+              Channels = channels }
 
         parseMagic ()
 
         let (width, height) = parseDimensions ()
 
-        parseChannels ()
+        let channels = parseChannels ()
 
         parseColorSpace ()
 
         parseEndMarker ()
 
-        createImage width height
+        createImage width height channels
 
     let public Decode (input: byte list) : Result<Image, DecodeError> =
         using (new MemoryStream(Array.ofList input)) (fun memStream ->

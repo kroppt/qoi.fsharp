@@ -3,11 +3,19 @@ module DecoderTests
 open Xunit
 open Qoi.Fsharp.Decoder
 open Qoi.Fsharp.Header
+open System
 
 let assertError (expected: DecodeError) (actual: Result<Image, DecodeError>) =
     match actual with
     | Ok _ -> Assert.True(false, $"expected {expected} but succeeded")
     | Error actual -> Assert.Equal(expected, actual)
+
+let assertOk (actual: Result<Image, DecodeError>) =
+    match actual with
+    | Ok image -> image
+    | Error error ->
+        Assert.True(false, $"failed with {error}")
+        raise (Exception())
 
 [<Fact>]
 let ``Should succeed`` () =
@@ -42,9 +50,7 @@ let ``Should succeed`` () =
 
     let actual = Decode input
 
-    match actual with
-    | Ok _ -> ()
-    | Error error -> Assert.True(false, $"failed with {error}")
+    assertOk actual |> ignore
 
 [<Fact>]
 let ``Should fail parsing bad magic bytes`` () =
@@ -119,11 +125,9 @@ let ``Should correctly parse width and height`` () =
 
     let actual = Decode input
 
-    match actual with
-    | Ok image ->
-        Assert.Equal(expectedWidth, image.Width)
-        Assert.Equal(expectedHeight, image.Height)
-    | Error error -> Assert.True(false, $"failed with {error}")
+    let image = assertOk actual
+    Assert.Equal(expectedWidth, image.Width)
+    Assert.Equal(expectedHeight, image.Height)
 
 [<Fact>]
 let ``Should fail parsing bad channels`` () =
@@ -303,3 +307,79 @@ let ``Should fail parsing incorrect end marker`` () =
     let actual = Decode input
 
     assertError expected actual
+
+[<Fact>]
+let ``Should parse Channels RGBA`` () =
+    let expected = Channels.Rgba
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte expected
+
+          byte ColorSpace.SRgb
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal(expected, image.Channels)
+
+[<Fact>]
+let ``Should parse Channels RGB`` () =
+    let expected = Channels.Rgb
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte expected
+
+          byte ColorSpace.SRgb
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal(expected, image.Channels)

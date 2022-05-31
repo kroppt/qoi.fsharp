@@ -309,7 +309,7 @@ let ``Should fail parsing incorrect end marker`` () =
     assertError expected actual
 
 [<Fact>]
-let ``Should parse Channels RGBA`` () =
+let ``Should parse channels RGBA`` () =
     let expected = Channels.Rgba
 
     let input =
@@ -347,7 +347,7 @@ let ``Should parse Channels RGBA`` () =
     Assert.Equal(expected, image.Channels)
 
 [<Fact>]
-let ``Should parse Channels RGB`` () =
+let ``Should parse channels RGB`` () =
     let expected = Channels.Rgb
 
     let input =
@@ -383,3 +383,79 @@ let ``Should parse Channels RGB`` () =
 
     let image = assertOk actual
     Assert.Equal(expected, image.Channels)
+
+[<Fact>]
+let ``Should parse color space SRGB`` () =
+    let expected = ColorSpace.SRgb
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte Channels.Rgb
+
+          byte expected
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal(expected, image.ColorSpace)
+
+[<Fact>]
+let ``Should parse color space linear`` () =
+    let expected = ColorSpace.Linear
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+
+          byte Channels.Rgb
+
+          byte expected
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal(expected, image.ColorSpace)

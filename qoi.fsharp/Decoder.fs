@@ -7,7 +7,8 @@ module Decoder =
     type public Image =
         { Width: uint
           Height: uint
-          Channels: Channels }
+          Channels: Channels
+          ColorSpace: ColorSpace }
 
     type public DecodeError =
         | BadMagicBytes
@@ -56,7 +57,7 @@ module Decoder =
 
             match colorSpace with
             | None -> raise (DecodeException BadColorSpaceValue)
-            | Some (_) -> ()
+            | Some colorSpace -> colorSpace
 
         let parseEndMarker () =
             let correctEndMarker =
@@ -77,10 +78,11 @@ module Decoder =
             if actualEndMarker <> correctEndMarker then
                 raise (DecodeException IncorrectEndMarker)
 
-        let createImage width height channels =
+        let createImage width height channels colorSpace =
             { Width = width
               Height = height
-              Channels = channels }
+              Channels = channels
+              ColorSpace = colorSpace }
 
         parseMagic ()
 
@@ -88,11 +90,11 @@ module Decoder =
 
         let channels = parseChannels ()
 
-        parseColorSpace ()
+        let colorSpace = parseColorSpace ()
 
         parseEndMarker ()
 
-        createImage width height channels
+        createImage width height channels colorSpace
 
     let public Decode (input: byte list) : Result<Image, DecodeError> =
         using (new MemoryStream(Array.ofList input)) (fun memStream ->

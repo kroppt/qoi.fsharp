@@ -770,3 +770,51 @@ let ``Should parse diff chunk`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse diff chunk with wraparound`` () =
+    let width = 2uy
+    let height = 1uy
+
+    let expected = [ 128uy; 255uy; 0uy; 128uy; 0uy; 255uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          width
+
+          0uy
+          0uy
+          0uy
+          height
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          255uy
+          0uy
+
+          Tag.Diff ||| 0b00_10_11_01uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

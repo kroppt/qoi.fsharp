@@ -63,7 +63,7 @@ module Decoder =
             | None -> raise (DecodeException BadColorSpaceValue)
             | Some colorSpace -> colorSpace
 
-        let parseChunks (width: uint) (height: uint) =
+        let parseChunks width height channels =
             let mutable bytes: byte list = []
 
             let cache = Array.zeroCreate<Pixel> 64
@@ -77,7 +77,10 @@ module Decoder =
                 )
 
             let writePixel pixel =
-                bytes <- bytes @ [ pixel.R; pixel.G; pixel.B; pixel.A ]
+                match channels with
+                | Channels.Rgb -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B ]
+                | Channels.Rgba -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B; pixel.A ]
+
                 cache[calculateIndex pixel] <- pixel
 
             let parseChunk () =
@@ -144,7 +147,7 @@ module Decoder =
 
         let colorSpace = parseColorSpace ()
 
-        let bytes = parseChunks width height
+        let bytes = parseChunks width height channels
 
         parseEndMarker ()
 

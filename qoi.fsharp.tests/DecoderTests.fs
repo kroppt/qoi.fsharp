@@ -517,6 +517,94 @@ let ``Should parse RGB chunk`` () =
     Assert.Equal<byte>(expected, image.Bytes)
 
 [<Fact>]
+let ``Should have bytes length based on RGB channels`` () =
+    let size = 1uy
+    let expectedBytesLength = int (size * size * 3uy)
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          size
+
+          0uy
+          0uy
+          0uy
+          size
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let result = Decode input
+
+    let actual = assertOk result
+    Assert.Equal(expectedBytesLength, actual.Bytes.Length)
+
+[<Fact>]
+let ``Should have bytes length based on RGBA channels`` () =
+    let size = 1uy
+    let expectedBytesLength = int (size * size * 4uy)
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          size
+
+          0uy
+          0uy
+          0uy
+          size
+
+          byte Channels.Rgba
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let result = Decode input
+
+    let actual = assertOk result
+    Assert.Equal(expectedBytesLength, actual.Bytes.Length)
+
+[<Fact>]
 let ``Should parse RGBA chunk`` () =
     let size = 1uy
     let expected = [ 128uy; 0uy; 0uy; 128uy ]

@@ -560,3 +560,70 @@ let ``Should parse RGBA chunk`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse index chunk`` () =
+    let width = 3uy
+    let height = 1uy
+
+    let expected =
+        [ 128uy
+          0uy
+          0uy
+          255uy
+
+          0uy
+          127uy
+          0uy
+          255uy
+
+          128uy
+          0uy
+          0uy
+          255uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          width
+
+          0uy
+          0uy
+          0uy
+          height
+
+          byte Channels.Rgba
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          0uy
+          0uy
+
+          Tag.Rgb
+          0uy
+          127uy
+          0uy
+
+          Tag.Index ||| 53uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

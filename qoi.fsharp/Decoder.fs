@@ -18,6 +18,9 @@ module Decoder =
         | MissingEndMarker
         | IncorrectEndMarker
 
+    [<Struct>]
+    type private Pixel = { R: byte; G: byte; B: byte; A: byte }
+
     exception DecodeException of DecodeError
 
     let private decode (binReader: BinaryReader) : Image =
@@ -63,6 +66,20 @@ module Decoder =
         let parseChunks (width: uint) (height: uint) =
             let mutable bytes: byte list = []
 
+            let cache = Array.zeroCreate<Pixel> 64
+
+            let calculateIndex pixel =
+                int (
+                    (pixel.R * 3uy
+                     + pixel.G * 5uy
+                     + pixel.B * 7uy
+                     + pixel.A * 11uy) % 64uy
+                )
+
+            let writePixel pixel =
+                bytes <- bytes @ [ pixel.R; pixel.G; pixel.B; pixel.A ]
+                cache[calculateIndex pixel] <- pixel
+
             let parseChunk () =
                 let tag = binReader.ReadByte()
 
@@ -70,13 +87,16 @@ module Decoder =
                     let r = binReader.ReadByte()
                     let g = binReader.ReadByte()
                     let b = binReader.ReadByte()
-                    bytes <- bytes @ [ r; g; b; 255uy ]
-                else
+                    writePixel { R = r; G = g; B = b; A = 255uy }
+                else if tag = Tag.Rgba then
                     let r = binReader.ReadByte()
                     let g = binReader.ReadByte()
                     let b = binReader.ReadByte()
                     let a = binReader.ReadByte()
-                    bytes <- bytes @ [ r; g; b; a ]
+                    writePixel { R = r; G = g; B = b; A = a }
+                else
+                    let pixel = cache[int tag]
+                    writePixel pixel
 
             let mutable y = 0u
             let mutable x = 0u

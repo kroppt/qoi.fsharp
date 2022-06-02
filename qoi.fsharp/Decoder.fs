@@ -61,13 +61,22 @@ module Decoder =
             | Some colorSpace -> colorSpace
 
         let parseChunks (width: uint) (height: uint) =
-            let mutable bytes = [ 128uy; 0uy; 0uy; 255uy ]
+            let mutable bytes: byte list = []
 
             let parseChunk () =
-                binReader.ReadByte() |> ignore
-                binReader.ReadByte() |> ignore
-                binReader.ReadByte() |> ignore
-                binReader.ReadByte() |> ignore
+                let tag = binReader.ReadByte()
+
+                if tag = 0b11111110uy then
+                    let r = binReader.ReadByte()
+                    let g = binReader.ReadByte()
+                    let b = binReader.ReadByte()
+                    bytes <- bytes @ [ r; g; b; 255uy ]
+                else
+                    let r = binReader.ReadByte()
+                    let g = binReader.ReadByte()
+                    let b = binReader.ReadByte()
+                    let a = binReader.ReadByte()
+                    bytes <- bytes @ [ r; g; b; a ]
 
             let mutable y = 0u
             let mutable x = 0u

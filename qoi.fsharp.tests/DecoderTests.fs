@@ -481,7 +481,7 @@ let ``Should parse RGB chunk`` () =
           0uy
           size
 
-          byte Channels.Rgb
+          byte Channels.Rgba
 
           byte ColorSpace.SRgb
 
@@ -489,6 +489,51 @@ let ``Should parse RGB chunk`` () =
           128uy
           0uy
           0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse RGBA chunk`` () =
+    let size = 1uy
+    let expected = [ 128uy; 0uy; 0uy; 128uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          size
+
+          0uy
+          0uy
+          0uy
+          size
+
+          byte Channels.Rgba
+
+          byte ColorSpace.SRgb
+
+          0b11111111uy
+          128uy
+          0uy
+          0uy
+          128uy
 
           0uy
           0uy

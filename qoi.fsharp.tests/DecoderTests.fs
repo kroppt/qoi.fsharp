@@ -876,3 +876,61 @@ let ``Should parse luma chunk`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse luma chunk with wraparound`` () =
+    let width = 2uy
+    let height = 1uy
+
+    let expected =
+        [ 128uy
+          255uy
+          0uy
+          255uy
+
+          128uy
+          1uy
+          255uy
+          255uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          width
+
+          0uy
+          0uy
+          0uy
+          height
+
+          byte Channels.Rgba
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          255uy
+          0uy
+
+          Tag.Luma ||| 0b00_100010uy
+          0b0110_0101uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

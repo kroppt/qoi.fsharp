@@ -8,7 +8,8 @@ module Decoder =
         { Width: uint
           Height: uint
           Channels: Channels
-          ColorSpace: ColorSpace }
+          ColorSpace: ColorSpace
+          Bytes: byte list }
 
     type public DecodeError =
         | BadMagicBytes
@@ -59,6 +60,27 @@ module Decoder =
             | None -> raise (DecodeException BadColorSpaceValue)
             | Some colorSpace -> colorSpace
 
+        let parseChunks (width: uint) (height: uint) =
+            let mutable bytes = [ 128uy; 0uy; 0uy; 255uy ]
+
+            let parseChunk () =
+                binReader.ReadByte() |> ignore
+                binReader.ReadByte() |> ignore
+                binReader.ReadByte() |> ignore
+                binReader.ReadByte() |> ignore
+
+            let mutable y = 0u
+            let mutable x = 0u
+
+            while y < height do
+                y <- y + 1u
+
+                while x < width do
+                    x <- x + 1u
+                    parseChunk ()
+
+            bytes
+
         let parseEndMarker () =
             let correctEndMarker =
                 [| 0uy
@@ -78,11 +100,12 @@ module Decoder =
             if actualEndMarker <> correctEndMarker then
                 raise (DecodeException IncorrectEndMarker)
 
-        let createImage width height channels colorSpace =
+        let createImage width height channels colorSpace bytes =
             { Width = width
               Height = height
               Channels = channels
-              ColorSpace = colorSpace }
+              ColorSpace = colorSpace
+              Bytes = bytes }
 
         parseMagic ()
 
@@ -92,9 +115,11 @@ module Decoder =
 
         let colorSpace = parseColorSpace ()
 
+        let bytes = parseChunks width height
+
         parseEndMarker ()
 
-        createImage width height channels colorSpace
+        createImage width height channels colorSpace bytes
 
     let public Decode (input: byte list) : Result<Image, DecodeError> =
         using (new MemoryStream(Array.ofList input)) (fun memStream ->

@@ -459,3 +459,47 @@ let ``Should parse color space linear`` () =
 
     let image = assertOk actual
     Assert.Equal(expected, image.ColorSpace)
+
+[<Fact>]
+let ``Should parse RGB chunk`` () =
+    let size = 1uy
+    let expected = [ 128uy; 0uy; 0uy; 255uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          size
+
+          0uy
+          0uy
+          0uy
+          size
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          0b11111110uy
+          128uy
+          0uy
+          0uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

@@ -3,6 +3,7 @@ module DecoderTests
 open Xunit
 open Qoi.Fsharp.Decoder
 open Qoi.Fsharp.Header
+open Qoi.Fsharp
 open System
 
 let assertError (expected: DecodeError) (actual: Result<Image, DecodeError>) =
@@ -19,6 +20,8 @@ let assertOk (actual: Result<Image, DecodeError>) =
 
 [<Fact>]
 let ``Should succeed`` () =
+    let size = 0uy
+
     let input =
         [ byte 'q'
           byte 'o'
@@ -28,12 +31,12 @@ let ``Should succeed`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -54,6 +57,7 @@ let ``Should succeed`` () =
 
 [<Fact>]
 let ``Should fail parsing bad magic bytes`` () =
+    let size = 0uy
     let expected = BadMagicBytes
 
     let input =
@@ -65,12 +69,12 @@ let ``Should fail parsing bad magic bytes`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -91,8 +95,8 @@ let ``Should fail parsing bad magic bytes`` () =
 
 [<Fact>]
 let ``Should correctly parse width and height`` () =
-    let expectedWidth = 0u
-    let expectedHeight = 0u
+    let expectedWidth = 1u
+    let expectedHeight = 1u
 
     let input =
         [ byte 'q'
@@ -114,6 +118,11 @@ let ``Should correctly parse width and height`` () =
 
           byte ColorSpace.SRgb
 
+          Tag.Rgb
+          128uy
+          0uy
+          0uy
+
           0uy
           0uy
           0uy
@@ -131,10 +140,8 @@ let ``Should correctly parse width and height`` () =
 
 [<Fact>]
 let ``Should fail parsing bad channels`` () =
+    let size = 0uy
     let expected = BadChannelsValue
-
-    let width = 0u
-    let height = 0u
 
     let input =
         [ byte 'q'
@@ -145,12 +152,12 @@ let ``Should fail parsing bad channels`` () =
           0uy
           0uy
           0uy
-          byte width
+          size
 
           0uy
           0uy
           0uy
-          byte height
+          size
 
           9uy
 
@@ -171,10 +178,8 @@ let ``Should fail parsing bad channels`` () =
 
 [<Fact>]
 let ``Should fail parsing bad color space`` () =
+    let size = 0uy
     let expected = BadColorSpaceValue
-
-    let width = 0u
-    let height = 0u
 
     let input =
         [ byte 'q'
@@ -185,12 +190,12 @@ let ``Should fail parsing bad color space`` () =
           0uy
           0uy
           0uy
-          byte width
+          size
 
           0uy
           0uy
           0uy
-          byte height
+          size
 
           byte Channels.Rgba
 
@@ -211,6 +216,7 @@ let ``Should fail parsing bad color space`` () =
 
 [<Fact>]
 let ``Should fail parsing missing end marker`` () =
+    let size = 0uy
     let expected = MissingEndMarker
 
     let input =
@@ -222,12 +228,12 @@ let ``Should fail parsing missing end marker`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -239,6 +245,7 @@ let ``Should fail parsing missing end marker`` () =
 
 [<Fact>]
 let ``Should fail parsing partial end marker`` () =
+    let size = 0uy
     let expected = MissingEndMarker
 
     let input =
@@ -250,12 +257,12 @@ let ``Should fail parsing partial end marker`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -273,6 +280,7 @@ let ``Should fail parsing partial end marker`` () =
 
 [<Fact>]
 let ``Should fail parsing incorrect end marker`` () =
+    let size = 0uy
     let expected = IncorrectEndMarker
 
     let input =
@@ -284,12 +292,12 @@ let ``Should fail parsing incorrect end marker`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -310,6 +318,7 @@ let ``Should fail parsing incorrect end marker`` () =
 
 [<Fact>]
 let ``Should parse channels RGBA`` () =
+    let size = 0uy
     let expected = Channels.Rgba
 
     let input =
@@ -321,12 +330,12 @@ let ``Should parse channels RGBA`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte expected
 
@@ -348,6 +357,7 @@ let ``Should parse channels RGBA`` () =
 
 [<Fact>]
 let ``Should parse channels RGB`` () =
+    let size = 0uy
     let expected = Channels.Rgb
 
     let input =
@@ -359,12 +369,12 @@ let ``Should parse channels RGB`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte expected
 
@@ -386,6 +396,7 @@ let ``Should parse channels RGB`` () =
 
 [<Fact>]
 let ``Should parse color space SRGB`` () =
+    let size = 0uy
     let expected = ColorSpace.SRgb
 
     let input =
@@ -397,12 +408,12 @@ let ``Should parse color space SRGB`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -424,6 +435,7 @@ let ``Should parse color space SRGB`` () =
 
 [<Fact>]
 let ``Should parse color space linear`` () =
+    let size = 0uy
     let expected = ColorSpace.Linear
 
     let input =
@@ -435,12 +447,12 @@ let ``Should parse color space linear`` () =
           0uy
           0uy
           0uy
-          0uy
+          size
 
           0uy
           0uy
           0uy
-          0uy
+          size
 
           byte Channels.Rgb
 
@@ -485,7 +497,7 @@ let ``Should parse RGB chunk`` () =
 
           byte ColorSpace.SRgb
 
-          0b11111110uy
+          Tag.Rgb
           128uy
           0uy
           0uy
@@ -529,7 +541,7 @@ let ``Should parse RGBA chunk`` () =
 
           byte ColorSpace.SRgb
 
-          0b11111111uy
+          Tag.Rgba
           128uy
           0uy
           0uy

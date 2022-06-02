@@ -72,14 +72,14 @@ module Encoder =
             binWriter.Write(byte colorSpace)
 
         member private _.WriteRgbaChunk(pixel: Pixel) =
-            binWriter.Write(0b11111111uy)
+            binWriter.Write(Tag.Rgba)
             binWriter.Write(pixel.R)
             binWriter.Write(pixel.G)
             binWriter.Write(pixel.B)
             binWriter.Write(pixel.A)
 
         member private _.WriteRgbChunk(pixel: Pixel) =
-            binWriter.Write(0b11111110uy)
+            binWriter.Write(Tag.Rgb)
             binWriter.Write(pixel.R)
             binWriter.Write(pixel.G)
             binWriter.Write(pixel.B)
@@ -88,7 +88,7 @@ module Encoder =
 
         member private _.WriteDiffChunk(diff: Diff) =
             let chunk =
-                0b01_000000uy
+                Tag.Diff
                 ||| (diff.R <<< 4)
                 ||| (diff.G <<< 2)
                 ||| (diff.B <<< 0)
@@ -96,14 +96,14 @@ module Encoder =
             binWriter.Write(chunk)
 
         member private _.WriteLumaChunk(lumaDiff: LumaDiff) =
-            let chunk1 = 0b10_000000uy ||| (lumaDiff.G <<< 8)
+            let chunk1 = Tag.Luma ||| (lumaDiff.G <<< 8)
             let chunk2 = (lumaDiff.RG <<< 4) ||| lumaDiff.BG
 
             binWriter.Write(chunk1)
             binWriter.Write(chunk2)
 
         member private _.WriteRunChunk() =
-            let chunk = 0b11_000000uy ||| (runLength - 1uy)
+            let chunk = Tag.Run ||| (runLength - 1uy)
             binWriter.Write(chunk)
 
         member private _.CalculateIndex(pixel: Pixel) =

@@ -66,7 +66,7 @@ module Decoder =
             let parseChunk () =
                 let tag = binReader.ReadByte()
 
-                if tag = 0b11111110uy then
+                if tag = Tag.Rgb then
                     let r = binReader.ReadByte()
                     let g = binReader.ReadByte()
                     let b = binReader.ReadByte()

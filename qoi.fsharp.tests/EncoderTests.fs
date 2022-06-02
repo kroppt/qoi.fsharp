@@ -3,6 +3,7 @@ module EncoderTests
 open Xunit
 open Qoi.Fsharp.Encoder
 open Qoi.Fsharp.Header
+open Qoi.Fsharp
 open System.IO
 open System
 open SixLabors.ImageSharp.PixelFormats
@@ -76,7 +77,7 @@ let ``Should have correct end marker`` () =
 
 [<Fact>]
 let ``Should have RGBA chunk`` () =
-    let expected = [ 0b11111111uy; 0uy; 0uy; 0uy; 128uy ]
+    let expected = [ Tag.Rgba; 0uy; 0uy; 0uy; 128uy ]
 
     let input =
         [ 0uy
@@ -111,7 +112,7 @@ let ``Should have RGBA chunk`` () =
 
 [<Fact>]
 let ``Should have RGB chunk`` () =
-    let expected = [ 0b11111110uy; 128uy; 0uy; 0uy ]
+    let expected = [ Tag.Rgb; 128uy; 0uy; 0uy ]
 
     let input =
         [ 128uy
@@ -146,7 +147,7 @@ let ``Should have RGB chunk`` () =
 
 [<Fact>]
 let ``Should have index chunk`` () =
-    let expected = 53uy
+    let expected = Tag.Index ||| 53uy
 
     let input =
         [ 128uy // RGB chunk
@@ -181,7 +182,7 @@ let ``Should have index chunk`` () =
 
 [<Fact>]
 let ``Should have diff chunk`` () =
-    let expected = 0b01_11_10_10uy
+    let expected = Tag.Diff ||| 0b00_11_10_10uy
 
     let input =
         [ 128uy // RGB chunk
@@ -206,7 +207,7 @@ let ``Should have diff chunk`` () =
 
 [<Fact>]
 let ``Should have diff chunk with wraparound`` () =
-    let expected = 0b01_10_11_01uy
+    let expected = Tag.Diff ||| 0b00_10_11_01uy
 
     let input =
         [ 128uy // RGB chunk
@@ -231,7 +232,9 @@ let ``Should have diff chunk with wraparound`` () =
 
 [<Fact>]
 let ``Should have luma chunk`` () =
-    let expected = [ 0b10_111111uy; 0b0000_1111uy ]
+    let expected =
+        [ Tag.Luma ||| 0b00_111111uy
+          0b0000_1111uy ]
 
     let input =
         [ 128uy
@@ -256,7 +259,9 @@ let ``Should have luma chunk`` () =
 
 [<Fact>]
 let ``Should have luma chunk wraparound`` () =
-    let expected = [ 0b10_100010uy; 0b0110_0101uy ]
+    let expected =
+        [ Tag.Luma ||| 0b00_100010uy
+          0b0110_0101uy ]
 
     let input =
         [ 128uy
@@ -281,7 +286,7 @@ let ``Should have luma chunk wraparound`` () =
 
 [<Fact>]
 let ``Should have run chunk`` () =
-    let expected = 0b11_000010uy
+    let expected = Tag.Run ||| 0b00_000010uy
 
     let input =
         [ 128uy
@@ -322,13 +327,13 @@ let ``Should have run chunk`` () =
 [<Fact>]
 let ``Should have max length run chunk`` () =
     let expected =
-        [ 0b11111110uy // RGB
+        [ Tag.Rgb
           128uy
           0uy
           0uy
 
-          0b11_111101uy // run 62
-          0b11_000000uy ] // run 1
+          Tag.Run ||| 0b00_111101uy // run 62
+          Tag.Run ||| 0b00_000000uy ] // run 1
 
     let input =
         List.append
@@ -349,14 +354,14 @@ let ``Should have max length run chunk`` () =
 [<Fact>]
 let ``Should have index chunk after run`` () =
     let expected =
-        [ 0b11_000001uy // run 2
+        [ Tag.Run ||| 0b00_000001uy // run 2
 
-          0b11111110uy // RGB
+          Tag.Rgb
           127uy
           0uy
           0uy
 
-          0b00_110101uy ] // index 53
+          Tag.Index ||| 0b00_110101uy ] // index 53
 
     let input =
         [ 0uy
@@ -391,7 +396,7 @@ let ``Should have index chunk after run`` () =
 
 [<Fact>]
 let ``Should have run chunk before end marker`` () =
-    let expected = 0b11_000000uy
+    let expected = Tag.Run ||| 0b00_000000uy
 
     let input =
         [ 128uy

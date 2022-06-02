@@ -115,6 +115,19 @@ module Decoder =
                           A = prev.A }
 
                     writePixel pixel
+                else if (tag &&& Tag.Mask) = Tag.Luma then
+                    let dg = (tag &&& Tag.LumaG >>> 0) - 32uy
+                    let b = binReader.ReadByte()
+                    let dr = (b &&& Tag.LumaRG >>> 4) - 8uy + dg
+                    let db = (b &&& Tag.LumaBG >>> 0) - 8uy + dg
+
+                    let pixel =
+                        { R = prev.R + dr
+                          G = prev.G + dg
+                          B = prev.B + db
+                          A = prev.A }
+
+                    writePixel pixel
 
             let mutable y = 0u
             let mutable x = 0u

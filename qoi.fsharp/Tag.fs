@@ -31,4 +31,13 @@ module public Tag =
     let public Luma = 0b10_000000uy
 
     [<Literal>]
+    let public LumaG = 0b00_111111uy
+
+    [<Literal>]
+    let public LumaRG = 0b1111_0000uy
+
+    [<Literal>]
+    let public LumaBG = 0b0000_1111uy
+
+    [<Literal>]
     let public Run = 0b11_000000uy

@@ -715,3 +715,58 @@ let ``Should parse index chunk`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse diff chunk`` () =
+    let width = 2uy
+    let height = 1uy
+
+    let expected =
+        [ 128uy
+          0uy
+          0uy
+
+          129uy
+          0uy
+          0uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          width
+
+          0uy
+          0uy
+          0uy
+          height
+
+          byte Channels.Rgb
+
+          byte ColorSpace.SRgb
+
+          Tag.Rgb
+          128uy
+          0uy
+          0uy
+
+          Tag.Diff ||| 0b00_11_10_10uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

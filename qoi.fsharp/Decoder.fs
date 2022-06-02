@@ -76,12 +76,15 @@ module Decoder =
                      + pixel.A * 11uy) % 64uy
                 )
 
+            let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
+
             let writePixel pixel =
                 match channels with
                 | Channels.Rgb -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B ]
                 | Channels.Rgba -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B; pixel.A ]
 
                 cache[calculateIndex pixel] <- pixel
+                prev <- pixel
 
             let parseChunk () =
                 let tag = binReader.ReadByte()
@@ -97,8 +100,20 @@ module Decoder =
                     let b = binReader.ReadByte()
                     let a = binReader.ReadByte()
                     writePixel { R = r; G = g; B = b; A = a }
-                else
+                else if (tag &&& Tag.Mask) = Tag.Index then
                     let pixel = cache[int tag]
+                    writePixel pixel
+                else if (tag &&& Tag.Mask) = Tag.Diff then
+                    let dr = ((tag &&& Tag.DiffR) >>> 4) - 2uy
+                    let dg = ((tag &&& Tag.DiffG) >>> 2) - 2uy
+                    let db = ((tag &&& Tag.DiffB) >>> 0) - 2uy
+
+                    let pixel =
+                        { R = prev.R + dr
+                          G = prev.G + dg
+                          B = prev.B + db
+                          A = prev.A }
+
                     writePixel pixel
 
             let mutable y = 0u

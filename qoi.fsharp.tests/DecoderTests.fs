@@ -5,6 +5,8 @@ open Qoi.Fsharp.Decoder
 open Qoi.Fsharp.Header
 open Qoi.Fsharp
 open System
+open System.IO
+open SixLabors.ImageSharp.PixelFormats
 
 let assertError (expected: DecodeError) (actual: Result<Image, DecodeError>) =
     match actual with
@@ -1074,3 +1076,24 @@ let ``Should parse index chunk ater run`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should decode 10x10 correctly`` () =
+    let (expectedBytes, expectedWidth, expectedHeight) =
+        using (SixLabors.ImageSharp.Image.Load<Rgb24> "testdata/10x10.png") (fun png ->
+            let input = Array.zeroCreate<byte> (png.Width * png.Height * 3)
+            png.CopyPixelDataTo input
+            (input, uint png.Width, uint png.Height))
+
+    let input = File.ReadAllBytes("testdata/10x10.qoi")
+    let expectedChannels = Channels.Rgb
+    let expectedColorSpace = ColorSpace.SRgb
+
+    let result = Decode(List.ofArray input)
+
+    let actual = assertOk result
+    Assert.Equal(expectedBytes, actual.Bytes)
+    Assert.Equal(expectedWidth, actual.Width)
+    Assert.Equal(expectedHeight, actual.Height)
+    Assert.Equal(expectedChannels, actual.Channels)
+    Assert.Equal(expectedColorSpace, actual.ColorSpace)

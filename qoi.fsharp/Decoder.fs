@@ -78,6 +78,8 @@ module Decoder =
 
             let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
 
+            let mutable numWritten = 0u
+
             let writePixel pixel =
                 match channels with
                 | Channels.Rgb -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B ]
@@ -85,6 +87,7 @@ module Decoder =
 
                 cache[calculateIndex pixel] <- pixel
                 prev <- pixel
+                numWritten <- numWritten + 1u
 
             let parseChunk () =
                 let tag = binReader.ReadByte()
@@ -128,16 +131,14 @@ module Decoder =
                           A = prev.A }
 
                     writePixel pixel
+                else if (tag &&& Tag.Mask) = Tag.Run then
+                    let run = (tag &&& ~~~Tag.Run) + 1uy
 
-            let mutable y = 0u
-            let mutable x = 0u
+                    for _ in 1uy .. run do
+                        writePixel prev
 
-            while y < height do
-                y <- y + 1u
-
-                while x < width do
-                    x <- x + 1u
-                    parseChunk ()
+            while numWritten < width * height do
+                parseChunk ()
 
             bytes
 

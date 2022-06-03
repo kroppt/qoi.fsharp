@@ -1097,3 +1097,24 @@ let ``Should decode 10x10 correctly`` () =
     Assert.Equal(expectedHeight, actual.Height)
     Assert.Equal(expectedChannels, actual.Channels)
     Assert.Equal(expectedColorSpace, actual.ColorSpace)
+
+[<Fact>]
+let ``Should decode sample correctly`` () =
+    let (expectedBytes, expectedWidth, expectedHeight) =
+        using (SixLabors.ImageSharp.Image.Load<Rgba32> "testdata/sample.png") (fun png ->
+            let input = Array.zeroCreate<byte> (png.Width * png.Height * 4)
+            png.CopyPixelDataTo input
+            (input, uint png.Width, uint png.Height))
+
+    let input = File.ReadAllBytes("testdata/sample.qoi")
+    let expectedChannels = Channels.Rgba
+    let expectedColorSpace = ColorSpace.SRgb
+
+    let result = Decode(List.ofArray input)
+
+    let actual = assertOk result
+    Assert.Equal(expectedBytes, actual.Bytes)
+    Assert.Equal(expectedWidth, actual.Width)
+    Assert.Equal(expectedHeight, actual.Height)
+    Assert.Equal(expectedChannels, actual.Channels)
+    Assert.Equal(expectedColorSpace, actual.ColorSpace)

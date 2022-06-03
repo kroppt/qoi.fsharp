@@ -1006,3 +1006,71 @@ let ``Should parse run chunk`` () =
 
     let image = assertOk actual
     Assert.Equal<byte>(expected, image.Bytes)
+
+[<Fact>]
+let ``Should parse index chunk ater run`` () =
+    let size = 2uy
+
+    let expected =
+        [ 0uy
+          0uy
+          0uy
+          255uy
+
+          0uy
+          0uy
+          0uy
+          255uy
+
+          127uy
+          0uy
+          0uy
+          255uy
+
+          0uy
+          0uy
+          0uy
+          255uy ]
+
+    let input =
+        [ byte 'q'
+          byte 'o'
+          byte 'i'
+          byte 'f'
+
+          0uy
+          0uy
+          0uy
+          size
+
+          0uy
+          0uy
+          0uy
+          size
+
+          byte Channels.Rgba
+
+          byte ColorSpace.SRgb
+
+          Tag.Run ||| 0b00_000001uy
+
+          Tag.Rgb
+          127uy
+          0uy
+          0uy
+
+          Tag.Index ||| 0b00_110101uy
+
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          0uy
+          1uy ]
+
+    let actual = Decode input
+
+    let image = assertOk actual
+    Assert.Equal<byte>(expected, image.Bytes)

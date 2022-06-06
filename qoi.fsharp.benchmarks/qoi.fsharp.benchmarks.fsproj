@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <DebugSymbols>false</DebugSymbols>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <Configuration>Release</Configuration>
+    <Tailcalls>true</Tailcalls>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="BenchmarkDotNet.Diagnostics.Windows" Version="0.13.1" Condition="'$(OS)' == 'Windows_NT'" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="2.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="EncodeBenchmarks.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\qoi.fsharp\qoi.fsharp.fsproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\testdata\**" LinkBase="testdata">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

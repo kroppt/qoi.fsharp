@@ -1,9 +1,14 @@
 ﻿open BenchmarkDotNet.Running
-open Qoi.Fsharp.Benchmarks.Decode
-open Qoi.Fsharp.Benchmarks.Encode
 
-[<EntryPoint>]
-let main argv =
-    BenchmarkRunner.Run<DecodeBenchmarks>() |> ignore
-    BenchmarkRunner.Run<EncodeBenchmarks>() |> ignore
-    0
+module Program =
+    [<Struct>]
+    type private Dummy = { b: byte }
+
+    [<EntryPoint>]
+    let main argv =
+        BenchmarkSwitcher
+            .FromAssembly(typeof<Dummy>.Assembly)
+            .Run(argv)
+        |> ignore
+
+        0

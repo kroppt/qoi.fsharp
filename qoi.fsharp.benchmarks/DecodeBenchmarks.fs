@@ -4,13 +4,13 @@ open BenchmarkDotNet.Attributes
 open System.IO
 open Qoi.Fsharp
 
-type DecodeBenchmarks() =
+type public DecodeBenchmarks() =
     let nonAlphaBytes = File.ReadAllBytes "testdata/10x10.qoi"
     let alphaBytes = File.ReadAllBytes "testdata/sample.qoi"
 
     [<Benchmark>]
-    member _.NonAlphaImage() =
+    member public _.NonAlphaImage() =
         Decoder.Decode(List.ofArray nonAlphaBytes)
 
     [<Benchmark>]
-    member _.AlphaImage() = Decoder.Decode(List.ofArray alphaBytes)
+    member public _.AlphaImage() = Decoder.Decode(List.ofArray alphaBytes)

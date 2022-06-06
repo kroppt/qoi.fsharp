@@ -45,7 +45,7 @@ module Encoder =
     type private Encoder
         (
             binWriter: BinaryWriter,
-            input: byte list,
+            input: byte array,
             width: int,
             height: int,
             channels: Channels,
@@ -116,12 +116,12 @@ module Encoder =
 
         member private this.WriteChunks() =
             input
-            |> List.chunkBySize (
+            |> Array.chunkBySize (
                 match channels with
                 | Channels.Rgb -> 3
                 | Channels.Rgba -> 4
             )
-            |> List.map (fun bytes ->
+            |> Array.map (fun bytes ->
                 { R = bytes[0]
                   G = bytes[1]
                   B = bytes[2]
@@ -129,7 +129,7 @@ module Encoder =
                     match channels with
                     | Channels.Rgb -> 255uy
                     | Channels.Rgba -> bytes[3] })
-            |> List.iter (fun pixel -> this.WriteChunk(pixel))
+            |> Array.iter (fun pixel -> this.WriteChunk(pixel))
 
         member private this.WriteChunk(pixel) =
             let index = this.CalculateIndex(pixel)
@@ -181,7 +181,7 @@ module Encoder =
             this.WriteFooter()
 
     let public Encode
-        (input: byte list)
+        (input: byte array)
         (width: int)
         (height: int)
         (channels: Channels)

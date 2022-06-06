@@ -10,7 +10,7 @@ open SixLabors.ImageSharp.PixelFormats
 
 [<Fact>]
 let ``Should succeed`` () =
-    let input = [ 0uy; 0uy; 0uy; 255uy ]
+    let input = [| 0uy; 0uy; 0uy; 255uy |]
     let width = 1
     let height = 1
     let channels = Channels.Rgba
@@ -27,7 +27,7 @@ let ``Should have correct header`` () =
         binWriter.Write(byte ((value >>> 8) &&& 0xFF))
         binWriter.Write(byte ((value >>> 0) &&& 0xFF))
 
-    let input = [ 0uy; 0uy; 0uy; 255uy ]
+    let input = [| 0uy; 0uy; 0uy; 255uy |]
     let width = 1
     let height = 1
     let channels = Channels.Rgba
@@ -64,7 +64,7 @@ let ``Should have correct end marker`` () =
           0uy
           1uy ]
 
-    let input = [ 100uy; 0uy; 0uy; 255uy ]
+    let input = [| 100uy; 0uy; 0uy; 255uy |]
     let width = 1
     let height = 1
     let channels = Channels.Rgba
@@ -80,25 +80,25 @@ let ``Should have RGBA chunk`` () =
     let expected = [ Tag.Rgba; 0uy; 0uy; 0uy; 128uy ]
 
     let input =
-        [ 0uy
-          0uy
-          0uy
-          128uy
+        [| 0uy
+           0uy
+           0uy
+           128uy
 
-          0uy
-          0uy
-          0uy
-          128uy
+           0uy
+           0uy
+           0uy
+           128uy
 
-          0uy
-          0uy
-          0uy
-          128uy
+           0uy
+           0uy
+           0uy
+           128uy
 
-          0uy
-          0uy
-          0uy
-          128uy ]
+           0uy
+           0uy
+           0uy
+           128uy |]
 
     let width = 2
     let height = 2
@@ -115,25 +115,25 @@ let ``Should have RGB chunk`` () =
     let expected = [ Tag.Rgb; 128uy; 0uy; 0uy ]
 
     let input =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy
+           128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy
+           128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy ]
+           128uy
+           0uy
+           0uy
+           255uy |]
 
     let width = 2
     let height = 2
@@ -150,25 +150,25 @@ let ``Should have index chunk`` () =
     let expected = Tag.Index ||| 53uy
 
     let input =
-        [ 128uy // RGB chunk
-          0uy
-          0uy
-          255uy
+        [| 128uy // RGB chunk
+           0uy
+           0uy
+           255uy
 
-          0uy // RGB chunk
-          127uy
-          0uy
-          255uy
+           0uy // RGB chunk
+           127uy
+           0uy
+           255uy
 
-          128uy // index chunk
-          0uy
-          0uy
-          255uy
+           128uy // index chunk
+           0uy
+           0uy
+           255uy
 
-          0uy // index chunk
-          127uy
-          0uy
-          255uy ]
+           0uy // index chunk
+           127uy
+           0uy
+           255uy |]
 
     let width = 2
     let height = 2
@@ -185,15 +185,15 @@ let ``Should have diff chunk`` () =
     let expected = Tag.Diff ||| 0b00_11_10_10uy
 
     let input =
-        [ 128uy // RGB chunk
-          0uy
-          0uy
-          255uy
+        [| 128uy // RGB chunk
+           0uy
+           0uy
+           255uy
 
-          129uy // diff chunk
-          0uy
-          0uy
-          255uy ]
+           129uy // diff chunk
+           0uy
+           0uy
+           255uy |]
 
     let width = 2
     let height = 1
@@ -210,15 +210,15 @@ let ``Should have diff chunk with wraparound`` () =
     let expected = Tag.Diff ||| 0b00_10_11_01uy
 
     let input =
-        [ 128uy // RGB chunk
-          255uy
-          0uy
-          255uy
+        [| 128uy // RGB chunk
+           255uy
+           0uy
+           255uy
 
-          128uy // diff chunk
-          0uy
-          255uy
-          255uy ]
+           128uy // diff chunk
+           0uy
+           255uy
+           255uy |]
 
     let width = 2
     let height = 1
@@ -237,15 +237,15 @@ let ``Should have luma chunk`` () =
           0b0000_1111uy ]
 
     let input =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          151uy
-          31uy
-          38uy
-          255uy ]
+           151uy
+           31uy
+           38uy
+           255uy |]
 
     let width = 2
     let height = 1
@@ -264,15 +264,15 @@ let ``Should have luma chunk wraparound`` () =
           0b0110_0101uy ]
 
     let input =
-        [ 128uy
-          255uy
-          0uy
-          255uy
+        [| 128uy
+           255uy
+           0uy
+           255uy
 
-          128uy
-          1uy
-          255uy
-          255uy ]
+           128uy
+           1uy
+           255uy
+           255uy |]
 
     let width = 2
     let height = 1
@@ -289,30 +289,30 @@ let ``Should have run chunk`` () =
     let expected = Tag.Run ||| 0b00_000010uy
 
     let input =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy
+           128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy
+           128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy
+           128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          129uy
-          0uy
-          255uy ]
+           128uy
+           129uy
+           0uy
+           255uy |]
 
     let width = 5
     let height = 1
@@ -340,6 +340,7 @@ let ``Should have max length run chunk`` () =
         <| List.replicate 64 [ 128uy; 0uy; 0uy; 255uy ]
         <| [ [ 0uy; 0uy; 0uy; 0uy ] ]
         |> List.concat
+        |> Array.ofList
 
     let width = 13
     let height = 5
@@ -364,25 +365,25 @@ let ``Should have index chunk after run`` () =
           Tag.Index ||| 0b00_110101uy ] // index 53
 
     let input =
-        [ 0uy
-          0uy
-          0uy
-          255uy
+        [| 0uy
+           0uy
+           0uy
+           255uy
 
-          0uy
-          0uy
-          0uy
-          255uy
+           0uy
+           0uy
+           0uy
+           255uy
 
-          127uy
-          0uy
-          0uy
-          255uy
+           127uy
+           0uy
+           0uy
+           255uy
 
-          0uy
-          0uy
-          0uy
-          255uy ]
+           0uy
+           0uy
+           0uy
+           255uy |]
 
     let width = 4
     let height = 1
@@ -399,15 +400,15 @@ let ``Should have run chunk before end marker`` () =
     let expected = Tag.Run ||| 0b00_000000uy
 
     let input =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy ]
+           128uy
+           0uy
+           0uy
+           255uy |]
 
     let width = 2
     let height = 1
@@ -432,7 +433,7 @@ let ``Should encode 10x10 correctly`` () =
     let channels = Channels.Rgb
     let colorSpace = ColorSpace.SRgb
 
-    let actual = Encode (List.ofArray input) width height channels colorSpace
+    let actual = Encode input width height channels colorSpace
 
     Assert.Equal<byte>(expected, actual)
 
@@ -449,6 +450,6 @@ let ``Should encode sample correctly`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    let actual = Encode (List.ofArray input) width height channels colorSpace
+    let actual = Encode input width height channels colorSpace
 
     Assert.Equal<byte>(expected, actual)

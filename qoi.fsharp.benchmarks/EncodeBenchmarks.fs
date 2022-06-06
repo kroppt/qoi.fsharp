@@ -10,13 +10,13 @@ type EncodeBenchmarks() =
         using (SixLabors.ImageSharp.Image.Load<Rgb24> "testdata/10x10.png") (fun png ->
             let input = Array.zeroCreate<byte> (png.Width * png.Height * 3)
             png.CopyPixelDataTo input
-            (List.ofArray input, png.Width, png.Height))
+            input, png.Width, png.Height)
 
     let (alphaBytes, alphaWidth, alphaHeight) =
         using (SixLabors.ImageSharp.Image.Load<Rgba32> "testdata/sample.png") (fun png ->
             let input = Array.zeroCreate<byte> (png.Width * png.Height * 4)
             png.CopyPixelDataTo input
-            (List.ofArray input, png.Width, png.Height))
+            input, png.Width, png.Height)
 
     [<Benchmark>]
     member _.NonAlphaImage() =

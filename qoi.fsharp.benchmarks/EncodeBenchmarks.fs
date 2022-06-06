@@ -1,9 +1,9 @@
-﻿module Qoi.Fsharp.Benchmarks
+﻿module Qoi.Fsharp.Benchmarks.Encode
 
 open BenchmarkDotNet.Attributes
 open SixLabors.ImageSharp.PixelFormats
-open Encoder
-open Header
+open Qoi.Fsharp
+open Qoi.Fsharp.Header
 
 type EncodeBenchmarks() =
     let (nonAlphaBytes, nonAlphaWidth, nonAlphaHeight) =
@@ -20,8 +20,8 @@ type EncodeBenchmarks() =
 
     [<Benchmark>]
     member _.NonAlphaImage() =
-        Encode nonAlphaBytes nonAlphaWidth nonAlphaHeight Channels.Rgb ColorSpace.SRgb
+        Encoder.Encode nonAlphaBytes nonAlphaWidth nonAlphaHeight Channels.Rgb ColorSpace.SRgb
 
     [<Benchmark>]
     member _.AlphaImage() =
-        Encode alphaBytes alphaWidth alphaHeight Channels.Rgba ColorSpace.SRgb
+        Encoder.Encode alphaBytes alphaWidth alphaHeight Channels.Rgba ColorSpace.SRgb

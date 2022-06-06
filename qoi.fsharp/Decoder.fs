@@ -9,7 +9,7 @@ module Decoder =
           Height: uint
           Channels: Channels
           ColorSpace: ColorSpace
-          Bytes: byte list }
+          Bytes: byte array }
 
     type public DecodeError =
         | BadMagicBytes
@@ -63,9 +63,7 @@ module Decoder =
             | None -> raise (DecodeException BadColorSpaceValue)
             | Some colorSpace -> colorSpace
 
-        let parseChunks width height channels =
-            let mutable bytes: byte list = []
-
+        let parseChunks (binWriter: BinaryWriter) width height channels =
             let cache = Array.zeroCreate<Pixel> 64
 
             let calculateIndex pixel =
@@ -82,8 +80,15 @@ module Decoder =
 
             let writePixel pixel =
                 match channels with
-                | Channels.Rgb -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B ]
-                | Channels.Rgba -> bytes <- bytes @ [ pixel.R; pixel.G; pixel.B; pixel.A ]
+                | Channels.Rgb ->
+                    binWriter.Write [| pixel.R
+                                       pixel.G
+                                       pixel.B |]
+                | Channels.Rgba ->
+                    binWriter.Write [| pixel.R
+                                       pixel.G
+                                       pixel.B
+                                       pixel.A |]
 
                 cache[calculateIndex pixel] <- pixel
                 prev <- pixel
@@ -140,8 +145,6 @@ module Decoder =
             while numWritten < width * height do
                 parseChunk ()
 
-            bytes
-
         let parseEndMarker () =
             let correctEndMarker =
                 [| 0uy
@@ -176,7 +179,10 @@ module Decoder =
 
         let colorSpace = parseColorSpace ()
 
-        let bytes = parseChunks width height channels
+        let bytes =
+            using (new MemoryStream()) (fun memStream ->
+                using (new BinaryWriter(memStream)) (fun binWriter -> parseChunks binWriter width height channels)
+                memStream.ToArray())
 
         parseEndMarker ()
 

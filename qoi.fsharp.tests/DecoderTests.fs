@@ -1092,7 +1092,7 @@ let ``Should decode 10x10 correctly`` () =
     let result = Decode(List.ofArray input)
 
     let actual = assertOk result
-    Assert.Equal(expectedBytes, actual.Bytes)
+    Assert.Equal<byte>(expectedBytes, actual.Bytes)
     Assert.Equal(expectedWidth, actual.Width)
     Assert.Equal(expectedHeight, actual.Height)
     Assert.Equal(expectedChannels, actual.Channels)
@@ -1113,7 +1113,7 @@ let ``Should decode sample correctly`` () =
     let result = Decode(List.ofArray input)
 
     let actual = assertOk result
-    Assert.Equal(expectedBytes, actual.Bytes)
+    Assert.Equal<byte>(expectedBytes, actual.Bytes)
     Assert.Equal(expectedWidth, actual.Width)
     Assert.Equal(expectedHeight, actual.Height)
     Assert.Equal(expectedChannels, actual.Channels)

@@ -1,4 +1,6 @@
-﻿open BenchmarkDotNet.Running
+﻿namespace Qoi.Fsharp.Benchmarks
+
+open BenchmarkDotNet.Running
 
 module Program =
     [<Struct>]

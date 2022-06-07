@@ -3,7 +3,7 @@ namespace Qoi.Fsharp
 module Decoder =
     open System.IO
 
-    open Header
+    open Qoi.Fsharp.Header
 
     [<Struct>]
     type public Image =

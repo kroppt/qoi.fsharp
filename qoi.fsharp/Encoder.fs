@@ -3,7 +3,7 @@
 module Encoder =
     open System.IO
 
-    open Header
+    open Qoi.Fsharp.Header
 
     [<Struct>]
     type private Pixel = { R: byte; G: byte; B: byte; A: byte }

@@ -1,4 +1,4 @@
-﻿module Qoi.Fsharp.Benchmarks.Encode
+﻿namespace Qoi.Fsharp.Benchmarks
 
 open BenchmarkDotNet.Attributes
 

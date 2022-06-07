@@ -1,4 +1,4 @@
-module Qoi.Fsharp.Benchmarks.Decode
+namespace Qoi.Fsharp.Benchmarks
 
 open System.IO
 

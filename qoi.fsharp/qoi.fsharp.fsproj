@@ -7,7 +7,8 @@
 
   <ItemGroup>
     <Compile Include="Tag.fs" />
-    <Compile Include="Header.fs" />
+    <Compile Include="Header/Channels.fs" />
+    <Compile Include="Header/ColorSpace.fs" />
     <Compile Include="Decoder.fs" />
     <Compile Include="Encoder.fs" />
   </ItemGroup>

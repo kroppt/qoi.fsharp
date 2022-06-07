@@ -4,6 +4,7 @@ module Decoder =
     open System.IO
     open Header
 
+    [<Struct>]
     type public Image =
         { Width: uint
           Height: uint
@@ -11,6 +12,7 @@ module Decoder =
           ColorSpace: ColorSpace
           Bytes: byte array }
 
+    [<Struct>]
     type public DecodeError =
         | BadMagicBytes
         | BadChannelsValue
@@ -45,7 +47,7 @@ module Decoder =
         let parseDimensions () =
             let width = readBigEndian ()
             let height = readBigEndian ()
-            (width, height)
+            struct (width, height)
 
         let parseChannels () =
             let channels = binReader.ReadByte()
@@ -173,7 +175,7 @@ module Decoder =
 
         parseMagic ()
 
-        let (width, height) = parseDimensions ()
+        let struct (width, height) = parseDimensions ()
 
         let channels = parseChannels ()
 
@@ -188,8 +190,8 @@ module Decoder =
 
         createImage width height channels colorSpace bytes
 
-    let public Decode (input: byte list) : Result<Image, DecodeError> =
-        using (new MemoryStream(Array.ofList input)) (fun memStream ->
+    let public Decode (input: byte array) : Result<Image, DecodeError> =
+        using (new MemoryStream(input)) (fun memStream ->
             using (new BinaryReader(memStream)) (fun binReader ->
                 try
                     Ok(decode binReader)

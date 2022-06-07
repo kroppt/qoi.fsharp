@@ -25,33 +25,33 @@ let ``Should succeed`` () =
     let size = 0uy
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -63,33 +63,33 @@ let ``Should fail parsing bad magic bytes`` () =
     let expected = BadMagicBytes
 
     let input =
-        [ byte 'a'
-          byte 'b'
-          byte 'c'
-          byte 'd'
+        [| byte 'a'
+           byte 'b'
+           byte 'c'
+           byte 'd'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -101,38 +101,38 @@ let ``Should correctly parse width and height`` () =
     let expectedHeight = 1u
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          byte expectedWidth
+           0uy
+           0uy
+           0uy
+           byte expectedWidth
 
-          0uy
-          0uy
-          0uy
-          byte expectedHeight
+           0uy
+           0uy
+           0uy
+           byte expectedHeight
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -146,33 +146,33 @@ let ``Should fail parsing bad channels`` () =
     let expected = BadChannelsValue
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          9uy
+           9uy
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -184,33 +184,33 @@ let ``Should fail parsing bad color space`` () =
     let expected = BadColorSpaceValue
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          2uy
+           2uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -222,24 +222,24 @@ let ``Should fail parsing missing end marker`` () =
     let expected = MissingEndMarker
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb ]
+           byte ColorSpace.SRgb |]
 
     let actual = Decode input
 
@@ -251,30 +251,30 @@ let ``Should fail parsing partial end marker`` () =
     let expected = MissingEndMarker
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy |]
 
     let actual = Decode input
 
@@ -286,33 +286,33 @@ let ``Should fail parsing incorrect end marker`` () =
     let expected = IncorrectEndMarker
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy
-          1uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy
+           1uy
+           1uy |]
 
     let actual = Decode input
 
@@ -324,33 +324,33 @@ let ``Should parse channels RGBA`` () =
     let expected = Channels.Rgba
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte expected
+           byte expected
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -363,33 +363,33 @@ let ``Should parse channels RGB`` () =
     let expected = Channels.Rgb
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte expected
+           byte expected
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -402,33 +402,33 @@ let ``Should parse color space SRGB`` () =
     let expected = ColorSpace.SRgb
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte expected
+           byte expected
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -441,33 +441,33 @@ let ``Should parse color space linear`` () =
     let expected = ColorSpace.Linear
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte expected
+           byte expected
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -477,41 +477,41 @@ let ``Should parse color space linear`` () =
 [<Fact>]
 let ``Should parse RGB chunk`` () =
     let size = 1uy
-    let expected = [ 128uy; 0uy; 0uy; 255uy ]
+    let expected = [| 128uy; 0uy; 0uy; 255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -524,38 +524,38 @@ let ``Should have bytes length based on RGB channels`` () =
     let expectedBytesLength = int (size * size * 3uy)
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let result = Decode input
 
@@ -568,38 +568,38 @@ let ``Should have bytes length based on RGBA channels`` () =
     let expectedBytesLength = int (size * size * 4uy)
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let result = Decode input
 
@@ -609,42 +609,42 @@ let ``Should have bytes length based on RGBA channels`` () =
 [<Fact>]
 let ``Should parse RGBA chunk`` () =
     let size = 1uy
-    let expected = [ 128uy; 0uy; 0uy; 128uy ]
+    let expected = [| 128uy; 0uy; 0uy; 128uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgba
-          128uy
-          0uy
-          0uy
-          128uy
+           Tag.Rgba
+           128uy
+           0uy
+           0uy
+           128uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -657,61 +657,61 @@ let ``Should parse index chunk`` () =
     let height = 1uy
 
     let expected =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          0uy
-          127uy
-          0uy
-          255uy
+           0uy
+           127uy
+           0uy
+           255uy
 
-          128uy
-          0uy
-          0uy
-          255uy ]
+           128uy
+           0uy
+           0uy
+           255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          Tag.Rgb
-          0uy
-          127uy
-          0uy
+           Tag.Rgb
+           0uy
+           127uy
+           0uy
 
-          Tag.Index ||| 53uy
+           Tag.Index ||| 53uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -724,49 +724,49 @@ let ``Should parse diff chunk`` () =
     let height = 1uy
 
     let expected =
-        [ 128uy
-          0uy
-          0uy
+        [| 128uy
+           0uy
+           0uy
 
-          129uy
-          0uy
-          0uy ]
+           129uy
+           0uy
+           0uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          Tag.Diff ||| 0b00_11_10_10uy
+           Tag.Diff ||| 0b00_11_10_10uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -778,43 +778,49 @@ let ``Should parse diff chunk with wraparound`` () =
     let width = 2uy
     let height = 1uy
 
-    let expected = [ 128uy; 255uy; 0uy; 128uy; 0uy; 255uy ]
+    let expected =
+        [| 128uy
+           255uy
+           0uy
+           128uy
+           0uy
+           255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          255uy
-          0uy
+           Tag.Rgb
+           128uy
+           255uy
+           0uy
 
-          Tag.Diff ||| 0b00_10_11_01uy
+           Tag.Diff ||| 0b00_10_11_01uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -827,52 +833,52 @@ let ``Should parse luma chunk`` () =
     let height = 1uy
 
     let expected =
-        [ 128uy
-          0uy
-          0uy
-          255uy
+        [| 128uy
+           0uy
+           0uy
+           255uy
 
-          151uy
-          31uy
-          38uy
-          255uy ]
+           151uy
+           31uy
+           38uy
+           255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          Tag.Luma ||| 0b00_111111uy
-          0b0000_1111uy
+           Tag.Luma ||| 0b00_111111uy
+           0b0000_1111uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -885,52 +891,52 @@ let ``Should parse luma chunk with wraparound`` () =
     let height = 1uy
 
     let expected =
-        [ 128uy
-          255uy
-          0uy
-          255uy
+        [| 128uy
+           255uy
+           0uy
+           255uy
 
-          128uy
-          1uy
-          255uy
-          255uy ]
+           128uy
+           1uy
+           255uy
+           255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          255uy
-          0uy
+           Tag.Rgb
+           128uy
+           255uy
+           0uy
 
-          Tag.Luma ||| 0b00_100010uy
-          0b0110_0101uy
+           Tag.Luma ||| 0b00_100010uy
+           0b0110_0101uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -943,66 +949,66 @@ let ``Should parse run chunk`` () =
     let height = 1uy
 
     let expected =
-        [ 128uy
-          0uy
-          0uy
+        [| 128uy
+           0uy
+           0uy
 
-          128uy
-          0uy
-          0uy
+           128uy
+           0uy
+           0uy
 
-          128uy
-          0uy
-          0uy
+           128uy
+           0uy
+           0uy
 
-          128uy
-          0uy
-          0uy
+           128uy
+           0uy
+           0uy
 
-          128uy
-          129uy
-          0uy ]
+           128uy
+           129uy
+           0uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          width
+           0uy
+           0uy
+           0uy
+           width
 
-          0uy
-          0uy
-          0uy
-          height
+           0uy
+           0uy
+           0uy
+           height
 
-          byte Channels.Rgb
+           byte Channels.Rgb
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Rgb
-          128uy
-          0uy
-          0uy
+           Tag.Rgb
+           128uy
+           0uy
+           0uy
 
-          Tag.Run ||| 0b00_000010uy
+           Tag.Run ||| 0b00_000010uy
 
-          Tag.Rgb
-          128uy
-          129uy
-          0uy
+           Tag.Rgb
+           128uy
+           129uy
+           0uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -1014,63 +1020,63 @@ let ``Should parse index chunk ater run`` () =
     let size = 2uy
 
     let expected =
-        [ 0uy
-          0uy
-          0uy
-          255uy
+        [| 0uy
+           0uy
+           0uy
+           255uy
 
-          0uy
-          0uy
-          0uy
-          255uy
+           0uy
+           0uy
+           0uy
+           255uy
 
-          127uy
-          0uy
-          0uy
-          255uy
+           127uy
+           0uy
+           0uy
+           255uy
 
-          0uy
-          0uy
-          0uy
-          255uy ]
+           0uy
+           0uy
+           0uy
+           255uy |]
 
     let input =
-        [ byte 'q'
-          byte 'o'
-          byte 'i'
-          byte 'f'
+        [| byte 'q'
+           byte 'o'
+           byte 'i'
+           byte 'f'
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          0uy
-          0uy
-          0uy
-          size
+           0uy
+           0uy
+           0uy
+           size
 
-          byte Channels.Rgba
+           byte Channels.Rgba
 
-          byte ColorSpace.SRgb
+           byte ColorSpace.SRgb
 
-          Tag.Run ||| 0b00_000001uy
+           Tag.Run ||| 0b00_000001uy
 
-          Tag.Rgb
-          127uy
-          0uy
-          0uy
+           Tag.Rgb
+           127uy
+           0uy
+           0uy
 
-          Tag.Index ||| 0b00_110101uy
+           Tag.Index ||| 0b00_110101uy
 
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           0uy
+           1uy |]
 
     let actual = Decode input
 
@@ -1089,7 +1095,7 @@ let ``Should decode 10x10 correctly`` () =
     let expectedChannels = Channels.Rgb
     let expectedColorSpace = ColorSpace.SRgb
 
-    let result = Decode(List.ofArray input)
+    let result = Decode input
 
     let actual = assertOk result
     Assert.Equal<byte>(expectedBytes, actual.Bytes)
@@ -1110,7 +1116,7 @@ let ``Should decode sample correctly`` () =
     let expectedChannels = Channels.Rgba
     let expectedColorSpace = ColorSpace.SRgb
 
-    let result = Decode(List.ofArray input)
+    let result = Decode input
 
     let actual = assertOk result
     Assert.Equal<byte>(expectedBytes, actual.Bytes)

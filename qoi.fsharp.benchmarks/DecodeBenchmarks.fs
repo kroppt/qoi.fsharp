@@ -9,8 +9,7 @@ type public DecodeBenchmarks() =
     let alphaBytes = File.ReadAllBytes "testdata/sample.qoi"
 
     [<Benchmark>]
-    member public _.NonAlphaImage() =
-        Decoder.Decode(List.ofArray nonAlphaBytes)
+    member public _.NonAlphaImage() = Decoder.Decode nonAlphaBytes
 
     [<Benchmark>]
-    member public _.AlphaImage() = Decoder.Decode(List.ofArray alphaBytes)
+    member public _.AlphaImage() = Decoder.Decode alphaBytes

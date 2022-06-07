@@ -1,7 +1,9 @@
 module Qoi.Fsharp.Benchmarks.Decode
 
-open BenchmarkDotNet.Attributes
 open System.IO
+
+open BenchmarkDotNet.Attributes
+
 open Qoi.Fsharp
 
 type public DecodeBenchmarks() =

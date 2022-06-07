@@ -2,6 +2,7 @@ namespace Qoi.Fsharp
 
 module Decoder =
     open System.IO
+
     open Header
 
     [<Struct>]

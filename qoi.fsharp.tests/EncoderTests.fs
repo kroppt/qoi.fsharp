@@ -1,12 +1,15 @@
 module EncoderTests
 
+open System
+open System.IO
+
 open Xunit
+
+open SixLabors.ImageSharp.PixelFormats
+
+open Qoi.Fsharp
 open Qoi.Fsharp.Encoder
 open Qoi.Fsharp.Header
-open Qoi.Fsharp
-open System.IO
-open System
-open SixLabors.ImageSharp.PixelFormats
 
 [<Fact>]
 let ``Should succeed`` () =

@@ -1,7 +1,9 @@
 ﻿module Qoi.Fsharp.Benchmarks.Encode
 
 open BenchmarkDotNet.Attributes
+
 open SixLabors.ImageSharp.PixelFormats
+
 open Qoi.Fsharp
 open Qoi.Fsharp.Header
 

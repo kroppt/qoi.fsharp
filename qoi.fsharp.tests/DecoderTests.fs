@@ -1,12 +1,15 @@
 module DecoderTests
 
-open Xunit
-open Qoi.Fsharp.Decoder
-open Qoi.Fsharp.Header
-open Qoi.Fsharp
 open System
 open System.IO
+
+open Xunit
+
 open SixLabors.ImageSharp.PixelFormats
+
+open Qoi.Fsharp
+open Qoi.Fsharp.Decoder
+open Qoi.Fsharp.Header
 
 let assertError (expected: DecodeError) (actual: Result<Image, DecodeError>) =
     match actual with

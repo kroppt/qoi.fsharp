@@ -2,6 +2,7 @@
 
 module Encoder =
     open System.IO
+
     open Header
 
     [<Struct>]

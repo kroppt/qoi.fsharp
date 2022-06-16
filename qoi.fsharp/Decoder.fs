@@ -182,8 +182,15 @@ module Decoder =
 
         let colorSpace = parseColorSpace ()
 
+        let pixelSize =
+            match channels with
+            | Channels.Rgb -> 3u
+            | Channels.Rgba -> 4u
+
+        let outputSize = int (width * height * pixelSize)
+
         let bytes =
-            using (new MemoryStream()) (fun memStream ->
+            using (new MemoryStream(outputSize)) (fun memStream ->
                 using (new BinaryWriter(memStream)) (fun binWriter -> parseChunks binWriter width height channels)
                 memStream.ToArray())
 

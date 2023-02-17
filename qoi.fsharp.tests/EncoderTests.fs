@@ -19,8 +19,7 @@ let ``Should succeed`` () =
     let channels = Channels.Rgba
     let colorSpace = ColorSpace.SRgb
 
-    Encode input width height channels colorSpace
-    |> ignore
+    Encode input width height channels colorSpace |> ignore
 
 [<Fact>]
 let ``Should have correct header`` () =
@@ -57,15 +56,7 @@ let ``Should have correct header`` () =
 
 [<Fact>]
 let ``Should have correct end marker`` () =
-    let expected =
-        [ 0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          0uy
-          1uy ]
+    let expected = [ 0uy; 0uy; 0uy; 0uy; 0uy; 0uy; 0uy; 1uy ]
 
     let input = [| 100uy; 0uy; 0uy; 255uy |]
     let width = 1
@@ -235,9 +226,7 @@ let ``Should have diff chunk with wraparound`` () =
 
 [<Fact>]
 let ``Should have luma chunk`` () =
-    let expected =
-        [ Tag.Luma ||| 0b00_111111uy
-          0b0000_1111uy ]
+    let expected = [ Tag.Luma ||| 0b00_111111uy; 0b0000_1111uy ]
 
     let input =
         [| 128uy
@@ -262,9 +251,7 @@ let ``Should have luma chunk`` () =
 
 [<Fact>]
 let ``Should have luma chunk wraparound`` () =
-    let expected =
-        [ Tag.Luma ||| 0b00_100010uy
-          0b0110_0101uy ]
+    let expected = [ Tag.Luma ||| 0b00_100010uy; 0b0110_0101uy ]
 
     let input =
         [| 128uy

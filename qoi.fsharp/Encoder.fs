@@ -38,23 +38,15 @@ module Encoder =
               BG = db - dg + 8uy }
 
         member this.IsSmall() =
-            this.G <= 63uy
-            && this.RG <= 15uy
-            && this.BG <= 15uy
+            this.G <= 63uy && this.RG <= 15uy && this.BG <= 15uy
 
     [<Class>]
     type private Encoder
-        (
-            binWriter: BinaryWriter,
-            input: byte array,
-            width: int,
-            height: int,
-            channels: Channels,
-            colorSpace: ColorSpace
-        ) =
+        (binWriter: BinaryWriter, input: byte array, width: int, height: int, channels: Channels, colorSpace: ColorSpace)
+        =
         let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
         let mutable runLength = 0uy
-        let cache: Pixel [] = Array.zeroCreate 64
+        let cache: Pixel[] = Array.zeroCreate 64
 
         member private _.writeBigEndian(value: int) =
             binWriter.Write(byte ((value >>> 24) &&& 0xFF))
@@ -88,11 +80,7 @@ module Encoder =
         member private _.WriteIndexChunk(index: int) = binWriter.Write(byte index)
 
         member private _.WriteDiffChunk(diff: Diff) =
-            let chunk =
-                Tag.Diff
-                ||| (diff.R <<< 4)
-                ||| (diff.G <<< 2)
-                ||| (diff.B <<< 0)
+            let chunk = Tag.Diff ||| (diff.R <<< 4) ||| (diff.G <<< 2) ||| (diff.B <<< 0)
 
             binWriter.Write(chunk)
 
@@ -108,12 +96,7 @@ module Encoder =
             binWriter.Write(chunk)
 
         member private _.CalculateIndex(pixel: Pixel) =
-            int (
-                pixel.R * 3uy
-                + pixel.G * 5uy
-                + pixel.B * 7uy
-                + pixel.A * 11uy
-            ) % 64
+            int (pixel.R * 3uy + pixel.G * 5uy + pixel.B * 7uy + pixel.A * 11uy) % 64
 
         member private this.WriteChunks() =
             input
@@ -148,12 +131,9 @@ module Encoder =
                 let diff = Diff(prev, pixel)
                 let lumaDiff = LumaDiff(prev, pixel)
 
-                if diff.IsSmall() then
-                    this.WriteDiffChunk(diff)
-                elif lumaDiff.IsSmall() then
-                    this.WriteLumaChunk(lumaDiff)
-                else
-                    this.WriteRgbChunk(pixel)
+                if diff.IsSmall() then this.WriteDiffChunk(diff)
+                elif lumaDiff.IsSmall() then this.WriteLumaChunk(lumaDiff)
+                else this.WriteRgbChunk(pixel)
 
                 cache[index] <- pixel
             else
@@ -187,10 +167,9 @@ module Encoder =
         (height: int)
         (channels: Channels)
         (colorSpace: ColorSpace)
-        : byte [] =
+        : byte[] =
         using (new MemoryStream()) (fun memStream ->
             using (new BinaryWriter(memStream)) (fun binWriter ->
-                Encoder(binWriter, input, width, height, channels, colorSpace)
-                    .Encode())
+                Encoder(binWriter, input, width, height, channels, colorSpace).Encode())
 
             memStream.ToArray())

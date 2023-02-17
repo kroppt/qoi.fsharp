@@ -34,11 +34,7 @@ module Decoder =
             ||| uint (binReader.ReadByte() <<< 0o00)
 
         let parseMagic () =
-            let correctMagic =
-                [| byte 'q'
-                   byte 'o'
-                   byte 'i'
-                   byte 'f' |]
+            let correctMagic = [| byte 'q'; byte 'o'; byte 'i'; byte 'f' |]
 
             let actualMagic = binReader.ReadBytes(4)
 
@@ -70,12 +66,7 @@ module Decoder =
             let cache = Array.zeroCreate<Pixel> 64
 
             let calculateIndex pixel =
-                int (
-                    (pixel.R * 3uy
-                     + pixel.G * 5uy
-                     + pixel.B * 7uy
-                     + pixel.A * 11uy) % 64uy
-                )
+                int ((pixel.R * 3uy + pixel.G * 5uy + pixel.B * 7uy + pixel.A * 11uy) % 64uy)
 
             let mutable prev = { R = 0uy; G = 0uy; B = 0uy; A = 255uy }
 
@@ -83,15 +74,8 @@ module Decoder =
 
             let writePixel pixel =
                 match channels with
-                | Channels.Rgb ->
-                    binWriter.Write [| pixel.R
-                                       pixel.G
-                                       pixel.B |]
-                | Channels.Rgba ->
-                    binWriter.Write [| pixel.R
-                                       pixel.G
-                                       pixel.B
-                                       pixel.A |]
+                | Channels.Rgb -> binWriter.Write [| pixel.R; pixel.G; pixel.B |]
+                | Channels.Rgba -> binWriter.Write [| pixel.R; pixel.G; pixel.B; pixel.A |]
 
                 cache[calculateIndex pixel] <- pixel
                 prev <- pixel
@@ -149,15 +133,7 @@ module Decoder =
                 parseChunk ()
 
         let parseEndMarker () =
-            let correctEndMarker =
-                [| 0uy
-                   0uy
-                   0uy
-                   0uy
-                   0uy
-                   0uy
-                   0uy
-                   1uy |]
+            let correctEndMarker = [| 0uy; 0uy; 0uy; 0uy; 0uy; 0uy; 0uy; 1uy |]
 
             let actualEndMarker = binReader.ReadBytes(correctEndMarker.Length)
 
@@ -203,5 +179,5 @@ module Decoder =
             using (new BinaryReader(memStream)) (fun binReader ->
                 try
                     Ok(decode binReader)
-                with
-                | DecodeException error -> Error(error)))
+                with DecodeException error ->
+                    Error(error)))

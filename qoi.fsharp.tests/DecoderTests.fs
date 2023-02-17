@@ -781,13 +781,7 @@ let ``Should parse diff chunk with wraparound`` () =
     let width = 2uy
     let height = 1uy
 
-    let expected =
-        [| 128uy
-           255uy
-           0uy
-           128uy
-           0uy
-           255uy |]
+    let expected = [| 128uy; 255uy; 0uy; 128uy; 0uy; 255uy |]
 
     let input =
         [| byte 'q'

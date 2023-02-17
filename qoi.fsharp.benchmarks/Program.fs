@@ -8,9 +8,6 @@ module Program =
 
     [<EntryPoint>]
     let main argv =
-        BenchmarkSwitcher
-            .FromAssembly(typeof<Dummy>.Assembly)
-            .Run(argv)
-        |> ignore
+        BenchmarkSwitcher.FromAssembly(typeof<Dummy>.Assembly).Run(argv) |> ignore
 
         0
